@@ -2,5 +2,5 @@
     "workbench.colorTheme": "Eva Dark Bold",
     "git.confirmSync": false,
     "git.autofetch": true,
-    "workbench.startupEditor": "none"
+    "workbench.startupEditor": "none",
 }
