@@ -3,4 +3,6 @@
     "git.confirmSync": false,
     "git.autofetch": true,
     "workbench.startupEditor": "none",
+    "git.suggestSmartCommit": false,
+    "rust-analyzer.inlayHints.enable": false,
 }
