@@ -5,4 +5,10 @@
     "workbench.startupEditor": "none",
     "git.suggestSmartCommit": false,
     "rust-analyzer.inlayHints.enable": false,
+    "lcov.path": "lcov.info",
+    "rust-analyzer.completion.privateEditable.enable": true,
+    "rust-analyzer.lens.implementations": false,
+    "rust-analyzer.inlayHints.typeHints": false,
+    "rust-analyzer.inlayHints.parameterHints": false,
+    "rust-analyzer.inlayHints.chainingHints": false,
 }
