@@ -1,0 +1,14 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Ruairidh Williamson
+	email = williamsonruairidh@gmail.com
+
+[core]
+	editor = nvim
+	excludesFile = ~/.gitignore
+
+[url "ssh://git@github.com/"]
+    insteadOf = https://github.com/
+
+[advice]
+	addIgnoredFile = false
