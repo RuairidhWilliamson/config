@@ -23,6 +23,5 @@ mln ./gitignore ~/.gitignore
 
 
 echo "Adding VSCode"
-cp ./VSCode/settings.json ~/.config/Code/User/settings.json
-cp ./VSCode/keybindings.json ~/.config/Code/User/keybindings.json
-
+mln ./VSCode/settings.json ~/.config/Code/User/settings.json
+mln ./VSCode/keybindings.json ~/.config/Code/User/keybindings.json
