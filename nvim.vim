@@ -14,6 +14,10 @@ Plug 'tpope/vim-commentary'
 
 Plug 'vim-airline/vim-airline'
 
+Plug 'ryanoasis/vim-devicons'
+
+Plug 'xuyuanp/nerdtree-git-plugin'
+
 call plug#end()
 
 set showmatch
@@ -21,8 +25,8 @@ set ignorecase
 set autoindent
 
 set number
-set relativenumber
-set relativenumber nu
+set norelativenumber
+set norelativenumber nu
 
 set expandtab
 set shiftwidth=4
@@ -30,6 +34,7 @@ set softtabstop=4
 set tabstop=4
 
 set mouse=nv
+set guifont=RobotoMono\ Nerd\ Font
 
 filetype plugin indent on
 syntax enable
