@@ -38,6 +38,7 @@ set guifont=RobotoMono\ Nerd\ Font
 
 filetype plugin indent on
 syntax enable
+set encoding=utf-8
 
 noremap <S-Insert> "*p
 noremap <silent> <C-s> :w<CR>
@@ -50,6 +51,8 @@ noremap <C-_> :terminal<CR>
 colorscheme OceanicNext
 
 noremap <C-/> :Commentary<CR>
+
+let g:NERDTreeQuitOnOpen = 1
 
 let g:ale_linters = {'rust': ['analyzer']}
 set completeopt=menu,menuone,preview,noselect,noinsert
@@ -67,3 +70,5 @@ nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 let g:airline#extensions#tabline#enabled = 1
+
+highlight link ALEError DiagnosticUnderlineError
