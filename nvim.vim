@@ -41,19 +41,22 @@ syntax enable
 set encoding=utf-8
 
 noremap <S-Insert> "*p
+inoremap <S-Insert> <C-R>*
+
 noremap <silent> <C-s> :w<CR>
-
-nnoremap <C-n> :NERDTreeMirror<CR>:NERDTreeFocus<CR>
-
-tnoremap <Esc> <C-\><C-n>
-noremap <C-_> :terminal<CR>
+inoremap <silent> <C-s> :w<CR>
 
 colorscheme OceanicNext
 
 noremap <C-/> :Commentary<CR>
 
+let g:airline#extensions#tabline#enabled = 1
+
+" NerdTree
+nnoremap <C-n> :NERDTreeMirror<CR>:NERDTreeToggle<CR>
 let g:NERDTreeQuitOnOpen = 1
 
+" ALE
 let g:ale_linters = {'rust': ['analyzer']}
 set completeopt=menu,menuone,preview,noselect,noinsert
 let g:ale_completion_enabled = 1
@@ -66,9 +69,12 @@ noremap <silent> <C-]> :ALEGoToDefinition<CR>
 noremap <silent> <C-[> :ALEFindReferences<CR>
 noremap <silent> <C-.> :ALECodeAction<CR>
 
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-
-let g:airline#extensions#tabline#enabled = 1
+nnoremap <silent> <C-k> :ALEPreviousWrap<CR>
+nnoremap <silent> <C-j> :ALENextWrap<CR>
 
 highlight link ALEError DiagnosticUnderlineError
+
+" Neovide
+let g:neovide_transparency=0.9
+let g:neovide_remember_window_size = v:true
+let g:neovide_cursor_animation_length=0
