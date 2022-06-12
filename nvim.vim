@@ -1,22 +1,15 @@
 call plug#begin()
 
 Plug 'preservim/nerdtree'
-
 Plug 'mhartington/oceanic-next'
-
 Plug 'airblade/vim-gitgutter'
-
 Plug 'rust-lang/rust.vim'
-
 Plug 'dense-analysis/ale'
-
 Plug 'tpope/vim-commentary'
-
 Plug 'vim-airline/vim-airline'
-
 Plug 'ryanoasis/vim-devicons'
-
 Plug 'xuyuanp/nerdtree-git-plugin'
+Plug 'jistr/vim-nerdtree-tabs'
 
 call plug#end()
 
@@ -53,7 +46,8 @@ noremap <C-/> :Commentary<CR>
 let g:airline#extensions#tabline#enabled = 1
 
 " NerdTree
-nnoremap <C-n> :NERDTreeMirror<CR>:NERDTreeToggle<CR>
+" nnoremap <C-n> :NERDTreeMirror<CR>:NERDTreeToggle<CR>
+nnoremap <C-n> :NERDTreeMirrorToggle<CR>
 let g:NERDTreeQuitOnOpen = 1
 
 " ALE
@@ -78,3 +72,13 @@ highlight link ALEError DiagnosticUnderlineError
 let g:neovide_transparency=0.9
 let g:neovide_remember_window_size = v:true
 let g:neovide_cursor_animation_length=0
+
+noremap <F11> :call FullscreenToggle()<CR>
+
+function! FullscreenToggle()
+    if g:neovide_fullscreen
+        let g:neovide_fullscreen=v:false
+    else
+        let g:neovide_fullscreen=v:true
+    endif
+endfunction
