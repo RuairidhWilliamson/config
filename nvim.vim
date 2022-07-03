@@ -7,9 +7,12 @@ Plug 'rust-lang/rust.vim'
 Plug 'dense-analysis/ale'
 Plug 'tpope/vim-commentary'
 Plug 'vim-airline/vim-airline'
-Plug 'ryanoasis/vim-devicons'
-Plug 'xuyuanp/nerdtree-git-plugin'
 Plug 'jistr/vim-nerdtree-tabs'
+Plug 'kyazdani42/nvim-web-devicons' 
+Plug 'flazz/vim-colorschemes'
+Plug 'othree/html5.vim'
+Plug 'pangloss/vim-javascript'
+Plug 'evanleck/vim-svelte', {'branch': 'main'}
 
 call plug#end()
 
@@ -39,7 +42,8 @@ inoremap <S-Insert> <C-R>*
 noremap <silent> <C-s> :w<CR>
 inoremap <silent> <C-s> :w<CR>
 
-colorscheme OceanicNext
+" colorscheme OceanicNext
+colorscheme Benokai
 
 noremap <C-/> :Commentary<CR>
 
