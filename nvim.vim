@@ -33,6 +33,8 @@ Plug 'evanleck/vim-svelte', {'branch': 'main'}
 Plug 'rust-lang/rust.vim'
 Plug 'DingDean/wgsl.vim'
 
+Plug 'maximbaz/lightline-ale'
+
 " Plug 'preservim/nerdtree'
 " Plug 'jistr/vim-nerdtree-tabs'
 
@@ -77,20 +79,23 @@ inoremap <silent> kj <esc>
 inoremap <S-Insert> <C-R>*
 
 nnoremap <silent> <C-s> :w<CR>
+inoremap <silent> <C-s> <esc>:w<CR>
+
 
 " colorscheme OceanicNext
 " colorscheme Benokai
 colorscheme Atelier_DuneDark
 
+nnoremap <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+set termguicolors
+set cursorline
+
 noremap <silent> <C-c> :Commentary<CR>
 
 let g:airline#extensions#tabline#enabled = 1
-
-" NerdTree
-" nnoremap <C-n> :NERDTreeMirror<CR>:NERDTreeToggle<CR>
-" nnoremap <silent> <C-n> :NERDTreeMirrorToggle<CR>
-" let g:NERDTreeQuitOnOpen = 1
-
 
 " ALE
 let g:ale_linters = {'rust': ['analyzer']}
@@ -117,7 +122,7 @@ nnoremap <silent> <C-j> :ALENextWrap<CR>
 " nmap <silent> <space>a <plug>(coc-codeaction)
 
 
-highlight link ALEError DiagnosticUnderlineError
+" highlight link ALEError DiagnosticUnderlineError
 
 " Neovide
 let g:neovide_transparency=0.9
@@ -133,3 +138,30 @@ function! FullscreenToggle()
         let g:neovide_fullscreen=v:true
     endif
 endfunction
+
+" Ale lightline
+
+let g:lightline = {}
+
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_infos': 'lightline#ale#infos',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+
+let g:lightline.component_type = {
+      \     'linter_checking': 'right',
+      \     'linter_infos': 'right',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'right',
+      \ }
+let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]] }
+
+let g:lightline.active = {
+            \ 'right': [ [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
+            \            [ 'lineinfo' ],
+	    \            [ 'percent' ],
+	    \            [ 'fileformat', 'fileencoding', 'filetype'] ] }
