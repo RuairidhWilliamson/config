@@ -9,6 +9,9 @@ function mln () {
     fi
 }
 
+echo "Adding alacritty"
+mln ./alacritty.yml ~/.config/alacritty/alacritty.yml
+
 echo "Adding nvim"
 mln ./nvim.vim ~/.config/nvim/init.vim 
 
