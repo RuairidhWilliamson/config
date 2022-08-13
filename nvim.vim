@@ -20,17 +20,8 @@ Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
 
 " Fuzzy finder
-Plug 'airblade/vim-rooter'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-
-" Language Support
-Plug 'neovim/nvim-lspconfig'
-Plug 'othree/html5.vim'
-Plug 'pangloss/vim-javascript'
-Plug 'evanleck/vim-svelte', {'branch': 'main'}
-Plug 'DingDean/wgsl.vim'
-Plug 'LnL7/vim-nix'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
 
 " Themes
 Plug 'chriskempson/base16-vim'
@@ -39,6 +30,14 @@ Plug 'kyazdani42/nvim-web-devicons'
 " Autocomplete
 Plug 'hrsh7th/nvim-compe'
 
+" Language Support
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
+" Plug 'othree/html5.vim'
+" Plug 'pangloss/vim-javascript'
+" Plug 'evanleck/vim-svelte', {'branch': 'main'}
+" Plug 'DingDean/wgsl.vim'
+" Plug 'LnL7/vim-nix'
 
 call plug#end()
 
@@ -67,7 +66,9 @@ syntax enable
 set encoding=utf-8
 
 " <Space> mappings
-noremap <silent> <space>f :GFiles<CR>
+noremap <silent> <space>f <cmd>Telescope git_files<CR>
+noremap <silent> <space>r <cmd>Telescope live_grep<CR>
+noremap <silent> <space>s <cmd>Telescope git_status<CR>
 noremap <space>p "+p
 noremap <space>P "+P
 noremap <space>y "+y
@@ -122,9 +123,29 @@ let g:lightline.active = {
 	    \            [ 'percent' ],
 	    \            [ 'fileformat', 'fileencoding', 'filetype'] ] }
 
-" LSP
 lua << EOF
 
+-- Telescope
+
+local actions = require('telescope.actions')
+require('telescope').setup{
+  defaults = {
+    mappings = {
+      i = {
+        ["<C-[>"] = actions.close,
+        ["<ESC>"] = actions.close,
+        ["<C-u>"] = false,
+        ["<C-j>"] = actions.move_selection_next,
+        ["<C-k>"] = actions.move_selection_previous,
+      }
+    }
+  }
+}
+
+-- Mason
+require("mason").setup()
+
+-- LSP
 require'lspconfig'.rust_analyzer.setup{}
 
 local opts = { noremap=true, silent=true }
@@ -200,48 +221,6 @@ require'compe'.setup {
     treesitter = true;
   };
 }
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-local check_back_space = function()
-    local col = vim.fn.col('.') - 1
-    if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-        return true
-    else
-        return false
-    end
-end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
-_G.tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-n>"
-  elseif vim.fn.call("vsnip#available", {1}) == 1 then
-    return t "<Plug>(vsnip-expand-or-jump)"
-  elseif check_back_space() then
-    return t "<Tab>"
-  else
-    return vim.fn['compe#complete']()
-  end
-end
-_G.s_tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-p>"
-  elseif vim.fn.call("vsnip#jumpable", {-1}) == 1 then
-    return t "<Plug>(vsnip-jump-prev)"
-  else
-    -- If <S-Tab> is not working in your terminal, change it to <C-h>
-    return t "<S-Tab>"
-  end
-end
-
-vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 
 -- vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
 
