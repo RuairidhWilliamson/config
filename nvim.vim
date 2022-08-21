@@ -37,7 +37,7 @@ Plug 'williamboman/mason.nvim'
 " Plug 'pangloss/vim-javascript'
 " Plug 'evanleck/vim-svelte', {'branch': 'main'}
 " Plug 'DingDean/wgsl.vim'
-" Plug 'LnL7/vim-nix'
+Plug 'LnL7/vim-nix'
 
 call plug#end()
 
@@ -116,12 +116,7 @@ let g:lightline.component_type = {
       \     'linter_errors': 'error',
       \     'linter_ok': 'right',
       \ }
-let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ]] }
-let g:lightline.active = {
-            \ 'right': [ [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
-            \            [ 'lineinfo' ],
-	    \            [ 'percent' ],
-	    \            [ 'fileformat', 'fileencoding', 'filetype'] ] }
+let g:lightline.active = { 'left': [['mode', 'paste'], ['readonly', 'relativepath', 'modified']], 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ], [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'] ] }
 
 lua << EOF
 
