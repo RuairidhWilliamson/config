@@ -18,6 +18,7 @@ Plug 'tpope/vim-commentary'
 " Lightline
 Plug 'itchyny/lightline.vim'
 Plug 'maximbaz/lightline-ale'
+Plug 'josa42/nvim-lightline-lsp'
 
 " Fuzzy finder
 Plug 'nvim-lua/plenary.nvim'
@@ -29,19 +30,21 @@ Plug 'kyazdani42/nvim-web-devicons'
 
 " Autocomplete
 Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
 
 " Language Support
 Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/mason.nvim'
-" Plug 'othree/html5.vim'
-" Plug 'pangloss/vim-javascript'
-" Plug 'evanleck/vim-svelte', {'branch': 'main'}
-" Plug 'DingDean/wgsl.vim'
 Plug 'LnL7/vim-nix'
+
+" Tree sitter
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" Color picker
+Plug 'ziontee113/color-picker.nvim'
 
 call plug#end()
 
@@ -69,8 +72,14 @@ filetype plugin indent on
 syntax enable
 set encoding=utf-8
 
+if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+
 " <Space> mappings
-noremap <silent> <space>f <cmd>Telescope git_files<CR>
+noremap <silent> <space>f <cmd>Telescope find_files<CR>
+noremap <silent> <space>F <cmd>Telescope git_files<CR>
 noremap <silent> <space>r <cmd>Telescope live_grep<CR>
 noremap <silent> <space>s <cmd>Telescope git_status<CR>
 noremap <space>p "+p
@@ -83,6 +92,7 @@ inoremap <S-Insert> <C-R>*
 nnoremap <silent> <C-s> :w<CR>
 inoremap <silent> <C-s> <esc>:w<CR>
 
+set background=dark
 colorscheme base16-atelier-dune
 
 noremap <silent> <C-c> :Commentary<CR>
@@ -120,7 +130,9 @@ let g:lightline.component_type = {
       \     'linter_errors': 'error',
       \     'linter_ok': 'right',
       \ }
-let g:lightline.active = { 'left': [['mode', 'paste'], ['readonly', 'relativepath', 'modified']], 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ], [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'] ] }
+let g:lightline.active = { 'left': [['mode', 'paste'], ['readonly', 'relativepath', 'modified']], 'right': [[  'lsp_info', 'lsp_hints', 'lsp_errors', 'lsp_warnings', 'lsp_ok' ], [ 'lsp_status' ], [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ], [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'] ] }
+
+call lightline#lsp#register()
 
 lua << EOF
 
@@ -176,7 +188,14 @@ require('lspconfig')['rust_analyzer'].setup{
     on_attach = on_attach,
     -- Server-specific settings...
     settings = {
-      ["rust-analyzer"] = {}
+      ["rust-analyzer"] = {
+          cargo = {
+              allFeatures = true
+              },
+          checkOnSave = {
+              command = "clippy"
+              },
+      }
     }
 }
 
@@ -191,16 +210,44 @@ vim.o.completeopt = "menu,menuone,noselect"
 local cmp = require'cmp'
 cmp.setup {
     sources = {
-        { name = 'nvim_lsp' }
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lsp_signature_help' },
     },
     mapping = cmp.mapping.preset.insert({
     ['<C-Space>'] = cmp.mapping.confirm { behaviour = cmp.ConfirmBehavior.Insert, select = true },
+    ['<C-j>'] = cmp.mapping.select_next_item(),
+    ['<C-k>'] = cmp.mapping.select_prev_item(),
     }),
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
+
 -- vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
+
+-- Treesitter
+vim.cmd[[au BufRead,BufNewFile *.wgsl	set filetype=wgsl]]
+require'nvim-treesitter.configs'.setup {
+    ensure_installed = {"wgsl"},
+    highlight = {
+        enable = true
+    },
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = "gnn",
+            node_incremental = "grn",
+            scope_incremental = "grc",
+            node_decremental = "grm",
+        },
+    },
+}
+
+-- Color picker
+require'color-picker'
+
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "<space>c", "<cmd>PickColor<cr>", opts)
 
 EOF
