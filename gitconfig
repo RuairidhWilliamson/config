@@ -12,3 +12,9 @@
 
 [advice]
 	addIgnoredFile = false
+[pull]
+	rebase = true
+[fetch]
+	prune = true
+[diff]
+	colorMoved = zebra
