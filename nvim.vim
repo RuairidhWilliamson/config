@@ -3,22 +3,17 @@ call plug#begin()
 " Conform to editor config defined in projects
 Plug 'editorconfig/editorconfig-vim'
 
-" Changes s to be a motion to search for text
-Plug 'justinmk/vim-sneak'
-
 " Make the yanked region apparent
 Plug 'machakann/vim-highlightedyank'
 
-" Git gutter status
-Plug 'airblade/vim-gitgutter'
+" Git
+Plug 'lewis6991/gitsigns.nvim'
 
 " Comment toggle
 Plug 'tpope/vim-commentary'
 
-" Lightline
-Plug 'itchyny/lightline.vim'
-Plug 'maximbaz/lightline-ale'
-Plug 'josa42/nvim-lightline-lsp'
+" Feline
+Plug 'feline-nvim/feline.nvim'
 
 " Fuzzy finder
 Plug 'nvim-lua/plenary.nvim'
@@ -44,7 +39,7 @@ Plug 'LnL7/vim-nix'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " Color picker
-Plug 'ziontee113/color-picker.nvim'
+Plug 'uga-rosa/ccc.nvim'
 
 call plug#end()
 
@@ -72,6 +67,9 @@ filetype plugin indent on
 syntax enable
 set encoding=utf-8
 
+set autoread
+au FocusGained,BufEnter * :silent! !
+
 if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
@@ -93,7 +91,8 @@ nnoremap <silent> <C-s> :w<CR>
 inoremap <silent> <C-s> <esc>:w<CR>
 
 set background=dark
-colorscheme base16-atelier-dune
+colorscheme base16-google-dark
+" colorscheme base16-atelier-dune
 
 noremap <silent> <C-c> :Commentary<CR>
 
@@ -114,30 +113,9 @@ function! FullscreenToggle()
     endif
 endfunction
 
-" Ale lightline
-let g:lightline = {}
-let g:lightline.component_expand = {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_infos': 'lightline#ale#infos',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
-      \ }
-let g:lightline.component_type = {
-      \     'linter_checking': 'right',
-      \     'linter_infos': 'right',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'right',
-      \ }
-let g:lightline.active = { 'left': [['mode', 'paste'], ['readonly', 'relativepath', 'modified']], 'right': [[  'lsp_info', 'lsp_hints', 'lsp_errors', 'lsp_warnings', 'lsp_ok' ], [ 'lsp_status' ], [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ], [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'] ] }
-
-call lightline#lsp#register()
-
 lua << EOF
 
 -- Telescope
-
 local actions = require('telescope.actions')
 require('telescope').setup{
   defaults = {
@@ -245,9 +223,21 @@ require'nvim-treesitter.configs'.setup {
 }
 
 -- Color picker
-require'color-picker'
+local ccc = require('ccc')
+local mapping = ccc.mapping
+ccc.setup({
+  mappings = {
+      ["<esc>"] = mapping.quit,
+  }
+})
 
 local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<space>c", "<cmd>PickColor<cr>", opts)
+vim.keymap.set("n", "<space>c", ":CccPick<cr>", opts)
+
+-- Git
+require('gitsigns').setup()
+
+-- Feline
+require('feline').setup()
 
 EOF
