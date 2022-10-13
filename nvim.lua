@@ -1,119 +1,91 @@
-call plug#begin()
+require 'packer'.startup(function(use)
+	-- Packer
+	use 'wbthomason/packer.nvim'
 
-" Conform to editor config defined in projects
-Plug 'editorconfig/editorconfig-vim'
+	-- Editor config defined in projects
+	use 'editorconfig/editorconfig-vim'
 
-" Make the yanked region apparent
-Plug 'machakann/vim-highlightedyank'
+	-- Git signs
+	use 'lewis6991/gitsigns.nvim'
 
-" Git
-Plug 'lewis6991/gitsigns.nvim'
+	-- Make the yanked region apparent
+	use 'machakann/vim-highlightedyank'
 
-" Comment toggle
-Plug 'tpope/vim-commentary'
+	-- Comment toggle
+	use 'tpope/vim-commentary'
 
-" Feline
-Plug 'feline-nvim/feline.nvim'
+	-- Feline
+	use 'feline-nvim/feline.nvim'
 
-" Fuzzy finder
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
+	-- Telescope
+	use {
+		'nvim-telescope/telescope.nvim', tag = '0.1.0',
+		requires = { {'nvim-lua/plenary.nvim'} }
+	}
 
-" Themes
-Plug 'chriskempson/base16-vim'
-Plug 'kyazdani42/nvim-web-devicons' 
+	-- Themes
+	use 'chriskempson/base16-vim'
+	use 'kyazdani42/nvim-web-devicons' 
 
-" Autocomplete
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
+	-- Autocomplete
+	use 'hrsh7th/cmp-nvim-lsp'
+	use 'hrsh7th/cmp-path'
+	use 'hrsh7th/cmp-cmdline'
+	use 'hrsh7th/nvim-cmp'
+	use 'hrsh7th/cmp-nvim-lsp-signature-help'
 
-" Language Support
-Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/mason.nvim'
-Plug 'LnL7/vim-nix'
+	-- Language Support
+	use 'neovim/nvim-lspconfig'
+	use 'williamboman/mason.nvim'
+	use 'LnL7/vim-nix'
 
-" Tree sitter
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+	-- Tree sitter
+	use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
 
-" Color picker
-Plug 'uga-rosa/ccc.nvim'
+	-- Color picker
+	use 'uga-rosa/ccc.nvim'
 
-call plug#end()
+end)
 
-set showmatch
-set ignorecase
-set autoindent
+-- Global binds
+local opts = { noremap = true, silent = true }
+vim.keymap.set('n', '<C-s>', ':w<CR>', opts)
+vim.keymap.set('i', '<C-s>', '<ESC>:w<CR>', opts)
+vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
+vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
+vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
+vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
+vim.keymap.set('n', '<Space>p', '"+p', opts)
+vim.keymap.set('n', '<Space>P', '"+P', opts)
+vim.keymap.set('n', '<Space>y', '"+y', opts)
+vim.keymap.set('n', '<Space>Y', '"+Y', opts)
+vim.keymap.set('i', '<S-Insert>', '<C-R>*', opts)
+vim.keymap.set('n', '<C-c>', ':Commentary<CR>', opts)
 
-set number
-set norelativenumber
-set norelativenumber nu
+-- Global Options
+vim.api.nvim_set_option('showmatch', true)
+vim.api.nvim_set_option('ignorecase', true)
+vim.api.nvim_set_option('autoindent', true)
 
-set expandtab
-set shiftwidth=4
-set softtabstop=4
-set tabstop=4
-set scrolloff=3
+vim.api.nvim_set_option('number', true)
+vim.api.nvim_set_option('relativenumber', false)
 
-set mouse=nv
-set guifont=RobotoMono\ Nerd\ Font
+vim.api.nvim_set_option('expandtab', true)
+vim.api.nvim_set_option('shiftwidth', 4)
+vim.api.nvim_set_option('softtabstop', 4)
+vim.api.nvim_set_option('tabstop', 4)
+vim.api.nvim_set_option('scrolloff', 3)
 
-set termguicolors
-set cursorline
+vim.api.nvim_set_option('mouse', 'nv')
+vim.api.nvim_set_option('guifont', 'RobotoMono Nerd Font')
 
-filetype plugin indent on
-syntax enable
-set encoding=utf-8
+vim.api.nvim_set_option('termguicolors', true)
+vim.api.nvim_set_option('cursorline', true)
+vim.api.nvim_set_option('encoding', 'utf-8')
+vim.api.nvim_set_option('autoread', true)
 
-set autoread
-au FocusGained,BufEnter * :silent! !
-
-if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-endif
-
-" <Space> mappings
-noremap <silent> <space>f <cmd>Telescope find_files<CR>
-noremap <silent> <space>F <cmd>Telescope git_files<CR>
-noremap <silent> <space>r <cmd>Telescope live_grep<CR>
-noremap <silent> <space>s <cmd>Telescope git_status<CR>
-noremap <space>p "+p
-noremap <space>P "+P
-noremap <space>y "+y
-noremap <space>Y "+Y
-
-inoremap <S-Insert> <C-R>*
-
-nnoremap <silent> <C-s> :w<CR>
-inoremap <silent> <C-s> <esc>:w<CR>
-
-set background=dark
-colorscheme base16-google-dark
-" colorscheme base16-atelier-dune
-
-noremap <silent> <C-c> :Commentary<CR>
-
-let g:airline#extensions#tabline#enabled = 1
-
-" Neovide
-let g:neovide_transparency=0.9
-let g:neovide_remember_window_size = v:true
-let g:neovide_cursor_animation_length=0
-
-noremap <F11> :call FullscreenToggle()<CR>
-
-function! FullscreenToggle()
-    if g:neovide_fullscreen
-        let g:neovide_fullscreen=v:false
-    else
-        let g:neovide_fullscreen=v:true
-    endif
-endfunction
-
-lua << EOF
+vim.api.nvim_set_option('background', 'dark')
+vim.api.nvim_command('colorscheme base16-google-dark')
 
 -- Telescope
 local actions = require('telescope.actions')
@@ -240,4 +212,3 @@ require('gitsigns').setup()
 -- Feline
 require('feline').setup()
 
-EOF
