@@ -49,18 +49,23 @@ end)
 
 -- Global binds
 local opts = { noremap = true, silent = true }
+local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<C-s>', ':w<CR>', opts)
 vim.keymap.set('i', '<C-s>', '<ESC>:w<CR>', opts)
 vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
 vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
 vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
 vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
+vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
+vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
+vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
 vim.keymap.set('n', '<Space>p', '"+p', opts)
 vim.keymap.set('n', '<Space>P', '"+P', opts)
 vim.keymap.set('n', '<Space>y', '"+y', opts)
 vim.keymap.set('n', '<Space>Y', '"+Y', opts)
 vim.keymap.set('i', '<S-Insert>', '<C-R>*', opts)
 vim.keymap.set('n', '<C-c>', ':Commentary<CR>', opts)
+vim.keymap.set('v', '<C-c>', ':Commentary<CR>', opts)
 
 -- Global Options
 vim.api.nvim_set_option('showmatch', true)
@@ -76,31 +81,38 @@ vim.api.nvim_set_option('softtabstop', 4)
 vim.api.nvim_set_option('tabstop', 4)
 vim.api.nvim_set_option('scrolloff', 3)
 
-vim.api.nvim_set_option('mouse', 'nv')
-vim.api.nvim_set_option('guifont', 'RobotoMono Nerd Font')
+vim.api.nvim_command('filetype plugin indent on')
+vim.api.nvim_command('syntax enable')
 
-vim.api.nvim_set_option('termguicolors', true)
+vim.api.nvim_set_option('mouse', 'nv')
+
 vim.api.nvim_set_option('cursorline', true)
 vim.api.nvim_set_option('encoding', 'utf-8')
-vim.api.nvim_set_option('autoread', true)
 
+-- Auto update files
+vim.api.nvim_set_option('autoread', true)
+vim.api.nvim_command('au FocusGained,BufEnter * :silent! !')
+
+-- Appearance
+vim.api.nvim_set_option('guifont', 'RobotoMono Nerd Font')
+vim.api.nvim_set_option('termguicolors', true)
 vim.api.nvim_set_option('background', 'dark')
 vim.api.nvim_command('colorscheme base16-google-dark')
 
 -- Telescope
 local actions = require('telescope.actions')
 require('telescope').setup{
-  defaults = {
-    mappings = {
-      i = {
-        ["<C-[>"] = actions.close,
-        ["<ESC>"] = actions.close,
-        ["<C-u>"] = false,
-        ["<C-j>"] = actions.move_selection_next,
-        ["<C-k>"] = actions.move_selection_previous,
-      }
-    }
-  }
+	defaults = {
+		mappings = {
+			i = {
+				["<C-[>"] = actions.close,
+				["<ESC>"] = actions.close,
+				["<C-u>"] = false,
+				["<C-j>"] = actions.move_selection_next,
+				["<C-k>"] = actions.move_selection_previous,
+			}
+		}
+	}
 }
 
 -- Mason
@@ -116,41 +128,35 @@ vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
 local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+	-- Enable completion triggered by <c-x><c-o>
+	vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<space>k', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<space>a', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
+	-- Mappings.
+	-- See `:help vim.lsp.*` for documentation on any of the below functions
+	local bufopts = { noremap=true, silent=true, buffer=bufnr }
+	vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+	vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
+	vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
+	vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
 end
 
 require('lspconfig')['rust_analyzer'].setup{
-    on_attach = on_attach,
-    -- Server-specific settings...
-    settings = {
-      ["rust-analyzer"] = {
-          cargo = {
-              allFeatures = true
-              },
-          checkOnSave = {
-              command = "clippy"
-              },
-      }
-    }
+	on_attach = on_attach,
+	-- Server-specific settings...
+	settings = {
+		["rust-analyzer"] = {
+			cargo = {
+				allFeatures = true
+			},
+			checkOnSave = {
+				command = "clippy"
+			},
+		}
+	}
 }
 
 require'lspconfig'.rnix.setup{
-  on_attach = on_attach,
+	on_attach = on_attach,
 }
 
 -- AUTOCOMPLETE
@@ -159,15 +165,15 @@ vim.o.completeopt = "menu,menuone,noselect"
 
 local cmp = require'cmp'
 cmp.setup {
-    sources = {
-        { name = 'nvim_lsp' },
-        { name = 'nvim_lsp_signature_help' },
-    },
-    mapping = cmp.mapping.preset.insert({
-    ['<C-Space>'] = cmp.mapping.confirm { behaviour = cmp.ConfirmBehavior.Insert, select = true },
-    ['<C-j>'] = cmp.mapping.select_next_item(),
-    ['<C-k>'] = cmp.mapping.select_prev_item(),
-    }),
+	sources = {
+		{ name = 'nvim_lsp' },
+		{ name = 'nvim_lsp_signature_help' },
+	},
+	mapping = cmp.mapping.preset.insert({
+		['<C-Space>'] = cmp.mapping.confirm { behaviour = cmp.ConfirmBehavior.Insert, select = true },
+		['<C-j>'] = cmp.mapping.select_next_item(),
+		['<C-k>'] = cmp.mapping.select_prev_item(),
+	}),
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -179,28 +185,28 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 -- Treesitter
 vim.cmd[[au BufRead,BufNewFile *.wgsl	set filetype=wgsl]]
 require'nvim-treesitter.configs'.setup {
-    ensure_installed = {"wgsl"},
-    highlight = {
-        enable = true
-    },
-    incremental_selection = {
-        enable = true,
-        keymaps = {
-            init_selection = "gnn",
-            node_incremental = "grn",
-            scope_incremental = "grc",
-            node_decremental = "grm",
-        },
-    },
+	ensure_installed = {"wgsl"},
+	highlight = {
+		enable = true
+	},
+	incremental_selection = {
+		enable = true,
+		keymaps = {
+			init_selection = "gnn",
+			node_incremental = "grn",
+			scope_incremental = "grc",
+			node_decremental = "grm",
+		},
+	},
 }
 
 -- Color picker
 local ccc = require('ccc')
 local mapping = ccc.mapping
 ccc.setup({
-  mappings = {
-      ["<esc>"] = mapping.quit,
-  }
+	mappings = {
+		["<esc>"] = mapping.quit,
+	}
 })
 
 local opts = { noremap = true, silent = true }
