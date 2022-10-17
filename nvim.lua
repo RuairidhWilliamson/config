@@ -22,6 +22,7 @@ require 'packer'.startup(function(use)
 		'nvim-telescope/telescope.nvim', tag = '0.1.0',
 		requires = { {'nvim-lua/plenary.nvim'} }
 	}
+	use { 'nvim-telescope/telescope-file-browser.nvim' }
 
 	-- Themes
 	use 'chriskempson/base16-vim'
@@ -56,9 +57,8 @@ vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
 vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
 vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
 vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
+vim.keymap.set('n', '<Space>e', ':Telescope file_browser<CR>', opts)
 vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
-vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
-vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
 vim.keymap.set('n', '<Space>p', '"+p', opts)
 vim.keymap.set('n', '<Space>P', '"+P', opts)
 vim.keymap.set('n', '<Space>y', '"+y', opts)
@@ -66,6 +66,8 @@ vim.keymap.set('n', '<Space>Y', '"+Y', opts)
 vim.keymap.set('i', '<S-Insert>', '<C-R>*', opts)
 vim.keymap.set('n', '<C-c>', ':Commentary<CR>', opts)
 vim.keymap.set('v', '<C-c>', ':Commentary<CR>', opts)
+vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
+vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
 
 -- Global Options
 vim.api.nvim_set_option('showmatch', true)
@@ -112,20 +114,25 @@ require('telescope').setup{
 				["<C-k>"] = actions.move_selection_previous,
 			}
 		}
+	},
+	extensions = {
+		file_browser = {
+			theme = 'ivy',
+			hijack_netrw = true,
+		}
 	}
 }
+require'telescope'.load_extension('file_browser')
 
 -- Mason
-require("mason").setup()
+require"mason".setup()
 
 -- LSP
 require'lspconfig'.rust_analyzer.setup{}
 
-local opts = { noremap=true, silent=true }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+vim.diagnostic.config({
+    signs = false,
+})
 
 local on_attach = function(client, bufnr)
 	-- Enable completion triggered by <c-x><c-o>
@@ -137,6 +144,8 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
 	vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
 	vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
+	vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
+	vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
 	vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
 end
 
@@ -160,7 +169,6 @@ require'lspconfig'.rnix.setup{
 }
 
 -- AUTOCOMPLETE
-
 vim.o.completeopt = "menu,menuone,noselect"
 
 local cmp = require'cmp'
@@ -177,7 +185,7 @@ cmp.setup {
 }
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 
 -- vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
