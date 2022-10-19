@@ -22,7 +22,7 @@ require 'packer'.startup(function(use)
 		'nvim-telescope/telescope.nvim', tag = '0.1.0',
 		requires = { {'nvim-lua/plenary.nvim'} }
 	}
-	use { 'nvim-telescope/telescope-file-browser.nvim' }
+	use 'nvim-telescope/telescope-file-browser.nvim'
 
 	-- Themes
 	use 'chriskempson/base16-vim'
@@ -45,6 +45,9 @@ require 'packer'.startup(function(use)
 
 	-- Color picker
 	use 'uga-rosa/ccc.nvim'
+
+    -- Toggle terminal
+    use 'akinsho/toggleterm.nvim'
 
 end)
 
@@ -70,62 +73,37 @@ vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
 
 -- Global Options
-vim.api.nvim_set_option('showmatch', true)
-vim.api.nvim_set_option('ignorecase', true)
-vim.api.nvim_set_option('autoindent', true)
+vim.opt.showmatch = true
+vim.opt.ignorecase = true
+vim.opt.autoindent = true
 
-vim.api.nvim_set_option('number', true)
-vim.api.nvim_set_option('relativenumber', false)
+vim.opt.number = true
+vim.opt.relativenumber = false
 
-vim.api.nvim_set_option('expandtab', true)
-vim.api.nvim_set_option('shiftwidth', 4)
-vim.api.nvim_set_option('softtabstop', 4)
-vim.api.nvim_set_option('tabstop', 4)
-vim.api.nvim_set_option('scrolloff', 3)
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 4
+vim.opt.tabstop = 4
+vim.opt.scrolloff = 3
+vim.opt.softtabstop = 4
 
 vim.api.nvim_command('filetype plugin indent on')
 vim.api.nvim_command('syntax enable')
 
-vim.api.nvim_set_option('mouse', 'nv')
+vim.opt.mouse = 'nv'
 
-vim.api.nvim_set_option('cursorline', true)
-vim.api.nvim_set_option('encoding', 'utf-8')
+vim.opt.cursorline = true
+vim.opt.encoding = 'utf-8'
 
 -- Auto update files
-vim.api.nvim_set_option('autoread', true)
+vim.opt.autoread = true
 vim.api.nvim_command('au FocusGained,BufEnter * :silent! !')
 
 -- Appearance
-vim.api.nvim_set_option('guifont', 'RobotoMono Nerd Font')
-vim.api.nvim_set_option('termguicolors', true)
-vim.api.nvim_set_option('background', 'dark')
+vim.opt.guifont = 'Cascadia Code:h11'
+vim.opt.guifont = 'RobotoMono Nerd Font'
+vim.opt.termguicolors = true
+vim.opt.background = 'dark'
 vim.api.nvim_command('colorscheme base16-google-dark')
-
--- Telescope
-local actions = require('telescope.actions')
-require('telescope').setup{
-	defaults = {
-		mappings = {
-			i = {
-				["<C-[>"] = actions.close,
-				["<ESC>"] = actions.close,
-				["<C-u>"] = false,
-				["<C-j>"] = actions.move_selection_next,
-				["<C-k>"] = actions.move_selection_previous,
-			}
-		}
-	},
-	extensions = {
-		file_browser = {
-			theme = 'ivy',
-			hijack_netrw = true,
-		}
-	}
-}
-require'telescope'.load_extension('file_browser')
-
--- Mason
-require"mason".setup()
 
 -- LSP
 require'lspconfig'.rust_analyzer.setup{}
@@ -168,7 +146,10 @@ require'lspconfig'.rnix.setup{
 	on_attach = on_attach,
 }
 
--- AUTOCOMPLETE
+-- Mason
+require"mason".setup()
+
+-- Autocomplete
 vim.o.completeopt = "menu,menuone,noselect"
 
 local cmp = require'cmp'
@@ -187,8 +168,29 @@ cmp.setup {
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
-
--- vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
+-- Telescope
+local actions = require('telescope.actions')
+require('telescope').setup{
+	defaults = {
+        file_ignore_patterns = {"vendor", "NugetPackages", "node_modules"},
+		mappings = {
+			i = {
+				["<C-[>"] = actions.close,
+				["<ESC>"] = actions.close,
+				["<C-u>"] = false,
+				["<C-j>"] = actions.move_selection_next,
+				["<C-k>"] = actions.move_selection_previous,
+			}
+		}
+	},
+	extensions = {
+		file_browser = {
+			theme = 'ivy',
+			hijack_netrw = true,
+		}
+	}
+}
+require'telescope'.load_extension('file_browser')
 
 -- Treesitter
 vim.cmd[[au BufRead,BufNewFile *.wgsl	set filetype=wgsl]]
@@ -208,6 +210,9 @@ require'nvim-treesitter.configs'.setup {
 	},
 }
 
+-- Neovide
+vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
+
 -- Color picker
 local ccc = require('ccc')
 local mapping = ccc.mapping
@@ -226,3 +231,9 @@ require('gitsigns').setup()
 -- Feline
 require('feline').setup()
 
+-- Toggle term
+require("toggleterm").setup{
+    open_mapping = [[<C-t>]],
+    insert_mappings = true,
+    terminal_mappings = true,
+}
