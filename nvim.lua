@@ -53,8 +53,14 @@ require 'packer'.startup(function(use)
     -- Toggle terminal
     use 'akinsho/toggleterm.nvim'
 
-    -- Mini AI
+    -- Mini
     use 'echasnovski/mini.nvim'
+
+    -- FTerm
+    use 'numToStr/FTerm.nvim'
+
+    -- Lsp Status
+    use 'nvim-lua/lsp-status.nvim'
 end)
 
 -- Global binds
@@ -111,6 +117,10 @@ vim.opt.termguicolors = true
 vim.opt.background = 'dark'
 vim.api.nvim_command('colorscheme base16-google-dark')
 
+-- Lsp Status
+local lsp_status = require('lsp-status')
+lsp_status.register_progress()
+
 -- LSP
 require'lspconfig'.rust_analyzer.setup{}
 
@@ -119,6 +129,7 @@ vim.diagnostic.config({
 })
 
 local on_attach = function(client, bufnr)
+    lsp_status.on_attach(client, buffnr)
 	-- Enable completion triggered by <c-x><c-o>
 	vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
@@ -316,6 +327,11 @@ components.active[1] = {
         right_sep = ' ',
     },
     {
+        provider = 'lsp_status',
+        left_sep = ' ',
+        right_sep = ' ',
+    },
+    {
         provider = 'diagnostic_errors',
         hl = { fg = 'red' },
     },
@@ -424,17 +440,27 @@ components.inactive[1] = {
     {},
 }
 
-require('feline').setup({components = components})
+custom_providers = {
+    lsp_status = function()
+        return lsp_status.status()
+    end
+}
+
+require('feline').setup({components = components, custom_providers = custom_providers})
 
 -- Toggle term
-require("toggleterm").setup{
-    open_mapping = [[<C-t>]],
-    insert_mappings = true,
-    terminal_mappings = true,
-}
+-- require("toggleterm").setup{
+--     open_mapping = [[<C-t>]],
+--     insert_mappings = true,
+--     terminal_mappings = true,
+-- }
 
 -- Mini AI
 require('mini.ai').setup()
 
 -- Luatab
 require('luatab').setup()
+
+-- FTerm
+vim.keymap.set('n', '<C-t>', '<Cmd>lua require("FTerm").toggle()<CR>')
+vim.keymap.set('t', '<C-t>', '<C-\\><C-n><Cmd>lua require("FTerm").toggle()<CR>')
