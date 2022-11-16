@@ -39,7 +39,6 @@ require 'packer'.startup(function(use)
 
     -- Feline
     use 'feline-nvim/feline.nvim'
-    use 'nvim-lua/lsp-status.nvim'
 
     -- Luatab
     use {
@@ -125,63 +124,7 @@ require 'packer'.startup(function(use)
     }
 
     -- Language Support
-    use {
-        'neovim/nvim-lspconfig',
-        config = function()
-            require'lspconfig'.rust_analyzer.setup{}
-
-            vim.diagnostic.config({
-                signs = false,
-            })
-
-            local on_attach = function(client, bufnr)
-                lsp_status.on_attach(client, buffnr)
-                -- Enable completion triggered by <c-x><c-o>
-                vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-                -- Mappings.
-                -- See `:help vim.lsp.*` for documentation on any of the below functions
-                local bufopts = { noremap=true, silent=true, buffer=bufnr }
-                vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-                vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
-                vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
-                vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
-                vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
-                vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
-                vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
-                vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
-            end
-
-            require('lspconfig')['rust_analyzer'].setup{
-                on_attach = on_attach,
-                -- Server-specific settings...
-                settings = {
-                    ["rust-analyzer"] = {
-                        cargo = {
-                            allFeatures = true,
-                        },
-                        procMacro = {
-                            enable = true,
-                        },
-                        checkOnSave = {
-                            command = "clippy"
-                        },
-                        diagnostics = {
-                            disabled = {"inactive-code"},
-                        },
-                    }
-                }
-            }
-
-            require('lspconfig')['wgsl_analyzer'].setup{
-                on_attach = on_attach,
-            }
-
-            require'lspconfig'.rnix.setup{
-                on_attach = on_attach,
-            }
-        end
-    }
+    use 'neovim/nvim-lspconfig'
     use {
         'williamboman/mason.nvim',
         config = function()
@@ -312,6 +255,62 @@ vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
 -- Lsp Status
 local lsp_status = require('lsp-status')
 lsp_status.register_progress()
+
+
+-- Lsp Config
+require'lspconfig'.rust_analyzer.setup{}
+
+vim.diagnostic.config({
+    signs = false,
+})
+
+local on_attach = function(client, bufnr)
+    lsp_status.on_attach(client, bufnr)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+    -- Mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local bufopts = { noremap=true, silent=true, buffer=bufnr }
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+    vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
+    vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
+    local builtin = require('telescope.builtin')
+    vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
+    vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
+    vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
+    vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
+end
+
+require('lspconfig')['rust_analyzer'].setup{
+    on_attach = on_attach,
+    -- Server-specific settings...
+    settings = {
+        ["rust-analyzer"] = {
+            cargo = {
+                allFeatures = true,
+            },
+            procMacro = {
+                enable = true,
+            },
+            checkOnSave = {
+                command = "clippy"
+            },
+            diagnostics = {
+                disabled = {"inactive-code"},
+            },
+        }
+    }
+}
+
+require('lspconfig')['wgsl_analyzer'].setup{
+    on_attach = on_attach,
+}
+
+require'lspconfig'.rnix.setup{
+    on_attach = on_attach,
+}
 
 -- Feline
 local components = {
