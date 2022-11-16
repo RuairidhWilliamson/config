@@ -1,3 +1,16 @@
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
+end
+
+local packer_bootstrap = ensure_packer()
+
 require 'packer'.startup(function(use)
     -- Packer
     use 'wbthomason/packer.nvim'
@@ -6,25 +19,74 @@ require 'packer'.startup(function(use)
     use 'editorconfig/editorconfig-vim'
 
     -- Git signs
-    use 'lewis6991/gitsigns.nvim'
+    use {
+        'lewis6991/gitsigns.nvim',
+        config = function()
+            require('gitsigns').setup()
+        end
+    }
 
     -- Make the yanked region apparent
     use 'machakann/vim-highlightedyank'
 
     -- Comment toggle
-    use 'tpope/vim-commentary'
+    use {
+        'numToStr/Comment.nvim',
+        config = function()
+            require('Comment').setup()
+        end
+    }
 
     -- Feline
     use 'feline-nvim/feline.nvim'
     use 'nvim-lua/lsp-status.nvim'
 
     -- Luatab
-    use 'alvarosevilla95/luatab.nvim'
+    use {
+        'alvarosevilla95/luatab.nvim',
+        config = function()
+            require('luatab').setup()
+        end
+    }
 
     -- Telescope
     use {
         'nvim-telescope/telescope.nvim', tag = '0.1.0',
-        requires = { {'nvim-lua/plenary.nvim'} }
+        requires = { {'nvim-lua/plenary.nvim'} },
+        config = function()
+            local opts = { noremap = true, silent = true }
+            vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
+            vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
+            vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
+            vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
+            vim.keymap.set('n', '<Space>e', ':Telescope file_browser<CR>', opts)
+            local builtin = require('telescope.builtin')
+            vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
+
+            local actions = require('telescope.actions')
+            require('telescope').setup{
+                defaults = {
+                    file_ignore_patterns = {"vendor", "NugetPackages", "node_modules"},
+                    mappings = {
+                        i = {
+                            ["<C-[>"] = actions.close,
+                            ["<ESC>"] = actions.close,
+                            ["<C-u>"] = false,
+                            ["<C-j>"] = actions.move_selection_next,
+                            ["<C-k>"] = actions.move_selection_previous,
+                        }
+                    }
+                },
+                extensions = {
+                    file_browser = {
+                        theme = 'ivy',
+                        hijack_netrw = true,
+                    }
+                }
+            }
+            require'telescope'.load_extension('file_browser')
+
+        end
     }
     use 'nvim-telescope/telescope-file-browser.nvim'
 
@@ -33,56 +95,181 @@ require 'packer'.startup(function(use)
     use 'kyazdani42/nvim-web-devicons' 
 
     -- Autocomplete
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-path'
-    use 'hrsh7th/cmp-cmdline'
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/cmp-nvim-lsp-signature-help'
+    use {
+        'hrsh7th/nvim-cmp',
+        requires = {
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
+            'hrsh7th/cmp-nvim-lsp-signature-help',
+        },
+        config = function()
+            vim.o.completeopt = "menu,menuone,noselect"
+
+            local cmp = require'cmp'
+            cmp.setup {
+                sources = {
+                    { name = 'nvim_lsp' },
+                    { name = 'nvim_lsp_signature_help' },
+                },
+                mapping = cmp.mapping.preset.insert({
+                    ['<C-Space>'] = cmp.mapping.confirm { behaviour = cmp.ConfirmBehavior.Insert, select = true },
+                    ['<C-j>'] = cmp.mapping.select_next_item(),
+                    ['<C-k>'] = cmp.mapping.select_prev_item(),
+                }),
+            }
+
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+        end
+    }
 
     -- Language Support
-    use 'neovim/nvim-lspconfig'
-    use 'williamboman/mason.nvim'
+    use {
+        'neovim/nvim-lspconfig',
+        config = function()
+            require'lspconfig'.rust_analyzer.setup{}
+
+            vim.diagnostic.config({
+                signs = false,
+            })
+
+            local on_attach = function(client, bufnr)
+                lsp_status.on_attach(client, buffnr)
+                -- Enable completion triggered by <c-x><c-o>
+                vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+                -- Mappings.
+                -- See `:help vim.lsp.*` for documentation on any of the below functions
+                local bufopts = { noremap=true, silent=true, buffer=bufnr }
+                vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+                vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
+                vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
+                vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
+                vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
+                vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
+                vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
+                vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
+            end
+
+            require('lspconfig')['rust_analyzer'].setup{
+                on_attach = on_attach,
+                -- Server-specific settings...
+                settings = {
+                    ["rust-analyzer"] = {
+                        cargo = {
+                            allFeatures = true,
+                        },
+                        procMacro = {
+                            enable = true,
+                        },
+                        checkOnSave = {
+                            command = "clippy"
+                        },
+                        diagnostics = {
+                            disabled = {"inactive-code"},
+                        },
+                    }
+                }
+            }
+
+            require('lspconfig')['wgsl_analyzer'].setup{
+                on_attach = on_attach,
+            }
+
+            require'lspconfig'.rnix.setup{
+                on_attach = on_attach,
+            }
+        end
+    }
+    use {
+        'williamboman/mason.nvim',
+        config = function()
+            require"mason".setup()
+        end
+    }
     use 'LnL7/vim-nix'
 
     -- Tree sitter
-    use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+    use {
+        'nvim-treesitter/nvim-treesitter',
+        run = ':TSUpdate',
+        config = function()
+            vim.cmd[[au BufRead,BufNewFile *.wgsl   set filetype=wgsl]]
+            require'nvim-treesitter.configs'.setup {
+                ensure_installed = {"wgsl"},
+                highlight = {
+                    enable = true
+                },
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        init_selection = "gnn",
+                        node_incremental = "grn",
+                        scope_incremental = "grc",
+                        node_decremental = "grm",
+                    },
+                },
+            }
+        end
+    }
 
     -- Color picker
-    use 'uga-rosa/ccc.nvim'
-
-    -- Toggle terminal
-    use 'akinsho/toggleterm.nvim'
+    use {
+        'uga-rosa/ccc.nvim',
+        config = function()
+            local ccc = require('ccc')
+            local mapping = ccc.mapping
+            local opts = { noremap = true, silent = true }
+            vim.keymap.set("n", "<space>c", ":CccPick<cr>", opts)
+            ccc.setup({
+                mappings = {
+                    ["<esc>"] = mapping.quit,
+                }
+            })
+        end
+    }
 
     -- Mini
-    use 'echasnovski/mini.nvim'
+    use {
+        'echasnovski/mini.nvim',
+        config = function()
+            require('mini.ai').setup()
+        end
+    }
 
     -- FTerm
-    use 'numToStr/FTerm.nvim'
+    use {
+        'numToStr/FTerm.nvim',
+        config = function()
+            vim.keymap.set('n', '<C-t>', '<Cmd>lua require("FTerm").toggle()<CR>')
+            vim.keymap.set('t', '<C-t>', '<C-\\><C-n><Cmd>lua require("FTerm").toggle()<CR>')
+        end
+    }
 
     -- Lsp Status
     use 'nvim-lua/lsp-status.nvim'
+
+    -- Bootstrap packer
+    if packer_bootstrap then
+        require('packer').sync()
+    end
 end)
 
 -- Global binds
 local opts = { noremap = true, silent = true }
-local builtin = require('telescope.builtin')
+
+-- ctrl + s to save
 vim.keymap.set('n', '<C-s>', ':w<CR>', opts)
 vim.keymap.set('i', '<C-s>', '<ESC>:w<CR>', opts)
-vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
-vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
-vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
-vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
-vim.keymap.set('n', '<Space>e', ':Telescope file_browser<CR>', opts)
-vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
+vim.keymap.set('v', '<C-s>', '<ESC>:w<CR>', opts)
+
+-- Copy paste from system
 vim.keymap.set('n', '<Space>p', '"+p', opts)
 vim.keymap.set('n', '<Space>P', '"+P', opts)
 vim.keymap.set('n', '<Space>y', '"+y', opts)
 vim.keymap.set('n', '<Space>Y', '"+Y', opts)
-vim.keymap.set('i', '<S-Insert>', '<C-R>*', opts)
-vim.keymap.set('n', '<C-c>', ':Commentary<CR>', opts)
-vim.keymap.set('v', '<C-c>', ':Commentary<CR>', opts)
-vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
+vim.keymap.set('i', '<S-Insert>', '<C-R>+', opts)
 
 -- Global Options
 vim.opt.showmatch = true
@@ -119,145 +306,10 @@ vim.opt.termguicolors = true
 vim.opt.background = 'dark'
 vim.api.nvim_command('colorscheme base16-google-dark')
 
--- Lsp Status
-local lsp_status = require('lsp-status')
-lsp_status.register_progress()
-
--- LSP
-require'lspconfig'.rust_analyzer.setup{}
-
-vim.diagnostic.config({
-    signs = false,
-})
-
-local on_attach = function(client, bufnr)
-    lsp_status.on_attach(client, buffnr)
-    -- Enable completion triggered by <c-x><c-o>
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-    -- Mappings.
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    local bufopts = { noremap=true, silent=true, buffer=bufnr }
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-    vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
-    vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
-    vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
-end
-
-require('lspconfig')['rust_analyzer'].setup{
-    on_attach = on_attach,
-    -- Server-specific settings...
-    settings = {
-        ["rust-analyzer"] = {
-            cargo = {
-                allFeatures = true,
-            },
-            procMacro = {
-                enable = true,
-            },
-            checkOnSave = {
-                command = "clippy"
-            },
-            diagnostics = {
-                disabled = {"inactive-code"},
-            },
-        }
-    }
-}
-
-require('lspconfig')['wgsl_analyzer'].setup{
-    on_attach = on_attach,
-}
-
-require'lspconfig'.rnix.setup{
-    on_attach = on_attach,
-}
-
--- Mason
-require"mason".setup()
-
--- Autocomplete
-vim.o.completeopt = "menu,menuone,noselect"
-
-local cmp = require'cmp'
-cmp.setup {
-    sources = {
-        { name = 'nvim_lsp' },
-        { name = 'nvim_lsp_signature_help' },
-    },
-    mapping = cmp.mapping.preset.insert({
-        ['<C-Space>'] = cmp.mapping.confirm { behaviour = cmp.ConfirmBehavior.Insert, select = true },
-        ['<C-j>'] = cmp.mapping.select_next_item(),
-        ['<C-k>'] = cmp.mapping.select_prev_item(),
-    }),
-}
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
--- Telescope
-local actions = require('telescope.actions')
-require('telescope').setup{
-    defaults = {
-        file_ignore_patterns = {"vendor", "NugetPackages", "node_modules"},
-        mappings = {
-            i = {
-                ["<C-[>"] = actions.close,
-                ["<ESC>"] = actions.close,
-                ["<C-u>"] = false,
-                ["<C-j>"] = actions.move_selection_next,
-                ["<C-k>"] = actions.move_selection_previous,
-            }
-        }
-    },
-    extensions = {
-        file_browser = {
-            theme = 'ivy',
-            hijack_netrw = true,
-        }
-    }
-}
-require'telescope'.load_extension('file_browser')
-
--- Treesitter
-vim.cmd[[au BufRead,BufNewFile *.wgsl   set filetype=wgsl]]
-require'nvim-treesitter.configs'.setup {
-    ensure_installed = {"wgsl"},
-    highlight = {
-        enable = true
-    },
-    incremental_selection = {
-        enable = true,
-        keymaps = {
-            init_selection = "gnn",
-            node_incremental = "grn",
-            scope_incremental = "grc",
-            node_decremental = "grm",
-        },
-    },
-}
-
 -- Neovide
 vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
 
--- Color picker
-local ccc = require('ccc')
-local mapping = ccc.mapping
-ccc.setup({
-    mappings = {
-        ["<esc>"] = mapping.quit,
-    }
-})
-
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<space>c", ":CccPick<cr>", opts)
-
--- Git
-require('gitsigns').setup()
-
--- LSP status
+-- Lsp Status
 local lsp_status = require('lsp-status')
 lsp_status.register_progress()
 
@@ -435,13 +487,3 @@ custom_providers = {
 }
 
 require('feline').setup({components = components, custom_providers = custom_providers})
-
--- Mini AI
-require('mini.ai').setup()
-
--- Luatab
-require('luatab').setup()
-
--- FTerm
-vim.keymap.set('n', '<C-t>', '<Cmd>lua require("FTerm").toggle()<CR>')
-vim.keymap.set('t', '<C-t>', '<C-\\><C-n><Cmd>lua require("FTerm").toggle()<CR>')
