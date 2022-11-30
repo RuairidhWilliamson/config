@@ -94,34 +94,14 @@ require 'packer'.startup(function(use)
     use 'kyazdani42/nvim-web-devicons' 
 
     -- Autocomplete
-    use {
-        'hrsh7th/nvim-cmp',
-        requires = {
-            'hrsh7th/cmp-nvim-lsp',
-            'hrsh7th/cmp-path',
-            'hrsh7th/cmp-cmdline',
-            'hrsh7th/cmp-nvim-lsp-signature-help',
-        },
-        config = function()
-            vim.o.completeopt = "menu,menuone,noselect"
-
-            local cmp = require'cmp'
-            cmp.setup {
-                sources = {
-                    { name = 'nvim_lsp' },
-                    { name = 'nvim_lsp_signature_help' },
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ['<C-Space>'] = cmp.mapping.confirm { behaviour = cmp.ConfirmBehavior.Insert, select = true },
-                    ['<C-j>'] = cmp.mapping.select_next_item(),
-                    ['<C-k>'] = cmp.mapping.select_prev_item(),
-                }),
-            }
-
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-        end
-    }
+    use 'hrsh7th/nvim-cmp'
+    use 'hrsh7th/cmp-buffer'
+    use 'hrsh7th/cmp-path'
+    use 'hrsh7th/cmp-cmdline'
+    use 'petertriho/cmp-git'
+    use 'hrsh7th/cmp-nvim-lua'
+    use 'hrsh7th/cmp-nvim-lsp'
+    use 'hrsh7th/cmp-nvim-lsp-signature-help'
 
     -- Language Support
     use 'neovim/nvim-lspconfig'
@@ -134,28 +114,31 @@ require 'packer'.startup(function(use)
     use 'LnL7/vim-nix'
 
     -- Tree sitter
-    use {
-        'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate',
-        config = function()
-            vim.cmd[[au BufRead,BufNewFile *.wgsl   set filetype=wgsl]]
-            require'nvim-treesitter.configs'.setup {
-                ensure_installed = {"wgsl"},
-                highlight = {
-                    enable = true
-                },
-                incremental_selection = {
-                    enable = true,
-                    keymaps = {
-                        init_selection = "gnn",
-                        node_incremental = "grn",
-                        scope_incremental = "grc",
-                        node_decremental = "grm",
-                    },
-                },
-            }
-        end
-    }
+    -- use {
+    --     'nvim-treesitter/nvim-treesitter',
+    --     run = ':TSUpdate',
+    --     config = function()
+    --         vim.cmd[[au BufRead,BufNewFile *.wgsl   set filetype=wgsl]]
+    --         require'nvim-treesitter.configs'.setup {
+    --             ensure_installed = {"c", "lua", "wgsl"},
+    --             disable = {
+    --                 "rust"
+    --             },
+    --             highlight = {
+    --                 enable = true
+    --             },
+    --             incremental_selection = {
+    --                 enable = true,
+    --                 keymaps = {
+    --                     init_selection = "gnn",
+    --                     node_incremental = "grn",
+    --                     scope_incremental = "grc",
+    --                     node_decremental = "grm",
+    --                 },
+    --             },
+    --         }
+    --     end
+    -- }
 
     -- Color picker
     use {
@@ -252,14 +235,52 @@ vim.api.nvim_command('colorscheme base16-google-dark')
 -- Neovide
 vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
 
+-- Auto complete
+vim.o.completeopt = "menu,menuone,noselect"
+
+local cmp = require'cmp'
+cmp.setup {
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lsp_signature_help' },
+        { name = 'nvim_lua' },
+        { name = 'path' },
+    }, {
+        { name = 'buffer', keyword_length = 3 },
+    }),
+    mapping = cmp.mapping.preset.insert({
+        ['<C-Space>'] = cmp.mapping.confirm { behaviour = cmp.ConfirmBehavior.Insert, select = true },
+        ['<C-j>'] = cmp.mapping.select_next_item(),
+        ['<C-k>'] = cmp.mapping.select_prev_item(),
+    }),
+}
+cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+        { name = 'cmp_git' },
+    }, {
+        { name = 'buffer' },
+    })
+})
+cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = 'buffer' }
+    }
+})
+cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' }
+    }, {
+        { name = 'cmdline' }
+    })
+})
+
 -- Lsp Status
 local lsp_status = require('lsp-status')
 lsp_status.register_progress()
 
-
 -- Lsp Config
-require'lspconfig'.rust_analyzer.setup{}
-
 vim.diagnostic.config({
     signs = false,
 })
@@ -283,8 +304,11 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
 end
 
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
 require('lspconfig')['rust_analyzer'].setup{
     on_attach = on_attach,
+    capabilities = capabilities,
     -- Server-specific settings...
     settings = {
         ["rust-analyzer"] = {
@@ -306,10 +330,12 @@ require('lspconfig')['rust_analyzer'].setup{
 
 require('lspconfig')['wgsl_analyzer'].setup{
     on_attach = on_attach,
+    capabilities = capabilities,
 }
 
 require'lspconfig'.rnix.setup{
     on_attach = on_attach,
+    capabilities = capabilities,
 }
 
 -- Feline
