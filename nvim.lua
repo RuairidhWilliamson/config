@@ -102,6 +102,8 @@ require 'packer'.startup(function(use)
     use 'hrsh7th/cmp-nvim-lua'
     use 'hrsh7th/cmp-nvim-lsp'
     use 'hrsh7th/cmp-nvim-lsp-signature-help'
+    use 'hrsh7th/cmp-vsnip'
+    use 'hrsh7th/vim-vsnip'
 
     -- Language Support
     use 'neovim/nvim-lspconfig'
@@ -240,11 +242,17 @@ vim.o.completeopt = "menu,menuone,noselect"
 
 local cmp = require'cmp'
 cmp.setup {
+    snippet = {
+        expand = function(args)
+            vim.fn["vsnip#anonymous"](args.body)
+        end,
+    },
     sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lua' },
         { name = 'path' },
+        { name = 'vsnip' },
     }, {
         { name = 'buffer', keyword_length = 3 },
     }),

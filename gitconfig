@@ -7,8 +7,8 @@
 	editor = nvim
 	excludesFile = ~/.gitignore
 
-[url "ssh://git@github.com/"]
-    insteadOf = https://github.com/
+[url "ssh://git@github.com/williamsonruairidh"]
+	insteadOf = https://github.com/williamsonruairidh
 
 [advice]
 	addIgnoredFile = false
