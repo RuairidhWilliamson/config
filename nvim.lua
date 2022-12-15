@@ -143,6 +143,8 @@ require 'packer'.startup(function(use)
     --     end
     -- }
 
+    use 'NoahTheDuke/vim-just'
+
     -- Color picker
     use {
         'uga-rosa/ccc.nvim',
@@ -305,7 +307,7 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', '<C-f>', vim.lsp.buf.formatting, bufopts)
+    vim.keymap.set('n', '<C-f>', vim.lsp.buf.format, bufopts)
     local builtin = require('telescope.builtin')
     vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
     vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
@@ -332,6 +334,11 @@ require('lspconfig')['rust_analyzer'].setup{
             },
             diagnostics = {
                 disabled = {"inactive-code"},
+            },
+            completion = {
+                postfix = {
+                    enable = false,
+                },
             },
         }
     }
