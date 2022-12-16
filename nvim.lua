@@ -31,9 +31,11 @@ require 'packer'.startup(function(use)
 
     -- Comment toggle
     use {
-        'numToStr/Comment.nvim',
+        'tpope/vim-commentary',
         config = function()
-            require('Comment').setup()
+            -- Binds to <C-/>
+            vim.keymap.set('n', '<C-_>', ':Commentary<CR>')
+            vim.keymap.set('v', '<C-_>', ':Commentary<CR>')
         end
     }
 
@@ -62,6 +64,8 @@ require 'packer'.startup(function(use)
             local builtin = require('telescope.builtin')
             vim.keymap.set('n', '<Space>l', builtin.diagnostics, opts)
             vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
+            vim.keymap.set('n', '<Space>d', builtin.grep_string, opts)
+            vim.keymap.set('n', '<Space><Space>', builtin.resume, opts)
 
             local actions = require('telescope.actions')
             require('telescope').setup{
@@ -115,34 +119,6 @@ require 'packer'.startup(function(use)
         end
     }
     use 'LnL7/vim-nix'
-
-    -- Tree sitter
-    -- use {
-    --     'nvim-treesitter/nvim-treesitter',
-    --     run = ':TSUpdate',
-    --     config = function()
-    --         vim.cmd[[au BufRead,BufNewFile *.wgsl   set filetype=wgsl]]
-    --         require'nvim-treesitter.configs'.setup {
-    --             ensure_installed = {"c", "lua", "wgsl"},
-    --             disable = {
-    --                 "rust"
-    --             },
-    --             highlight = {
-    --                 enable = true
-    --             },
-    --             incremental_selection = {
-    --                 enable = true,
-    --                 keymaps = {
-    --                     init_selection = "gnn",
-    --                     node_incremental = "grn",
-    --                     scope_incremental = "grc",
-    --                     node_decremental = "grm",
-    --                 },
-    --             },
-    --         }
-    --     end
-    -- }
-
     use 'NoahTheDuke/vim-just'
 
     -- Color picker
@@ -229,6 +205,8 @@ vim.opt.encoding = 'utf-8'
 -- Auto update files
 vim.opt.autoread = true
 vim.api.nvim_command('au FocusGained,BufEnter * :silent! !')
+vim.api.nvim_command('au BufNewFile,BufRead *.wgsl set syntax=rust')
+vim.api.nvim_command('au BufNewFile,BufRead *.wgsl setlocal commentstring=//\\ %s')
 
 -- Appearance
 vim.opt.guifont = 'Cascadia Code:h11'
