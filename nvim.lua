@@ -53,44 +53,7 @@ require 'packer'.startup(function(use)
     -- Telescope
     use {
         'nvim-telescope/telescope.nvim', tag = '0.1.0',
-        requires = { {'nvim-lua/plenary.nvim'} },
-        config = function()
-            local opts = { noremap = true, silent = true }
-            vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
-            vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
-            vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
-            vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
-            vim.keymap.set('n', '<Space>e', '<Cmd>Telescope file_browser<CR>', opts)
-            local builtin = require('telescope.builtin')
-            vim.keymap.set('n', '<Space>l', builtin.diagnostics, opts)
-            vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
-            vim.keymap.set('n', '<Space>d', builtin.grep_string, opts)
-            vim.keymap.set('n', '<Space><Space>', builtin.resume, opts)
-
-            local actions = require('telescope.actions')
-            require('telescope').setup{
-                defaults = {
-                    file_ignore_patterns = {"vendor", "NugetPackages", "node_modules"},
-                    mappings = {
-                        i = {
-                            ["<C-[>"] = actions.close,
-                            ["<ESC>"] = actions.close,
-                            ["<C-u>"] = false,
-                            ["<C-j>"] = actions.move_selection_next,
-                            ["<C-k>"] = actions.move_selection_previous,
-                        }
-                    }
-                },
-                extensions = {
-                    file_browser = {
-                        theme = 'ivy',
-                        hijack_netrw = true,
-                    }
-                }
-            }
-            require'telescope'.load_extension('file_browser')
-
-        end
+        requires = { 'nvim-lua/plenary.nvim' },
     }
     use 'nvim-telescope/telescope-file-browser.nvim'
 
@@ -120,6 +83,13 @@ require 'packer'.startup(function(use)
     }
     use 'LnL7/vim-nix'
     use 'NoahTheDuke/vim-just'
+    use {
+        'saecki/crates.nvim',
+        requries = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            require('crates').setup()
+        end
+    }
 
     -- Color picker
     use {
@@ -205,6 +175,8 @@ vim.opt.encoding = 'utf-8'
 -- Auto update files
 vim.opt.autoread = true
 vim.api.nvim_command('au FocusGained,BufEnter * :silent! !')
+
+-- Custom file types
 vim.api.nvim_command('au BufNewFile,BufRead *.wgsl set syntax=rust')
 vim.api.nvim_command('au BufNewFile,BufRead *.wgsl setlocal commentstring=//\\ %s')
 
@@ -217,6 +189,43 @@ vim.api.nvim_command('colorscheme base16-google-dark')
 
 -- Neovide
 vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
+
+-- Telescope
+local opts = { noremap = true, silent = true }
+vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
+vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
+vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
+vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
+vim.keymap.set('n', '<Space>e', '<Cmd>Telescope file_browser<CR>', opts)
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<Space>l', builtin.diagnostics, opts)
+vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
+vim.keymap.set('n', '<Space>d', builtin.grep_string, opts)
+vim.keymap.set('n', '<Space><Space>', builtin.resume, opts)
+
+local actions = require('telescope.actions')
+require('telescope').setup{
+    defaults = {
+        file_ignore_patterns = {"vendor", "NugetPackages", "node_modules"},
+        mappings = {
+            i = {
+                ["<C-[>"] = actions.close,
+                ["<ESC>"] = actions.close,
+                ["<C-u>"] = false,
+                ["<C-j>"] = actions.move_selection_next,
+                ["<C-k>"] = actions.move_selection_previous,
+            }
+        }
+    },
+    extensions = {
+        file_browser = {
+            theme = 'ivy',
+            hijack_netrw = true,
+        }
+    }
+}
+require'telescope'.load_extension('file_browser')
+
 
 -- Auto complete
 vim.o.completeopt = "menu,menuone,noselect"
