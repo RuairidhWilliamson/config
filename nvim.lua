@@ -1,137 +1,69 @@
-local ensure_packer = function()
-  local fn = vim.fn
-  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-  if fn.empty(fn.glob(install_path)) > 0 then
-    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.cmd [[packadd packer.nvim]]
-    return true
-  end
-  return false
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--single-branch",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
 end
+vim.opt.runtimepath:prepend(lazypath)
 
-local packer_bootstrap = ensure_packer()
-
-require 'packer'.startup(function(use)
-    -- Packer
-    use 'wbthomason/packer.nvim'
-
-    -- Editor config defined in projects
-    use 'editorconfig/editorconfig-vim'
-
-    -- Git signs
-    use {
-        'lewis6991/gitsigns.nvim',
-        config = function()
-            require('gitsigns').setup()
-        end
-    }
-
-    -- Make the yanked region apparent
-    use 'machakann/vim-highlightedyank'
-
-    -- Comment toggle
-    use {
-        'tpope/vim-commentary',
-        config = function()
-            -- Binds to <C-/>
-            vim.keymap.set('n', '<C-_>', ':Commentary<CR>')
-            vim.keymap.set('v', '<C-_>', ':Commentary<CR>')
-        end
-    }
-
-    -- Feline
-    use 'feline-nvim/feline.nvim'
-
-    -- Luatab
-    use {
-        'alvarosevilla95/luatab.nvim',
-        config = function()
-            require('luatab').setup()
-        end
-    }
-
-    -- Telescope
-    use {
-        'nvim-telescope/telescope.nvim', tag = '0.1.0',
-        requires = { 'nvim-lua/plenary.nvim' },
-    }
-    use 'nvim-telescope/telescope-file-browser.nvim'
-
-    -- Themes
-    use 'chriskempson/base16-vim'
-    use 'kyazdani42/nvim-web-devicons' 
-
-    -- Autocomplete
-    use 'hrsh7th/nvim-cmp'
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/cmp-path'
-    use 'hrsh7th/cmp-cmdline'
-    use 'petertriho/cmp-git'
-    use 'hrsh7th/cmp-nvim-lua'
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'hrsh7th/cmp-nvim-lsp-signature-help'
-    use 'hrsh7th/cmp-vsnip'
-    use 'hrsh7th/vim-vsnip'
-
-    -- Language Support
-    use 'neovim/nvim-lspconfig'
-    use {
-        'williamboman/mason.nvim',
-        config = function()
-            require"mason".setup()
-        end
-    }
-    use 'LnL7/vim-nix'
-    use 'NoahTheDuke/vim-just'
-    use {
-        'saecki/crates.nvim',
-        requries = { 'nvim-lua/plenary.nvim' },
-        config = function()
-            require('crates').setup()
-        end
-    }
-
-    -- Color picker
-    use {
-        'uga-rosa/ccc.nvim',
-        config = function()
-            local ccc = require('ccc')
-            local mapping = ccc.mapping
-            local opts = { noremap = true, silent = true }
-            vim.keymap.set("n", "<space>c", ":CccPick<cr>", opts)
-            ccc.setup({
-                mappings = {
-                    ["<esc>"] = mapping.quit,
-                }
-            })
-        end
-    }
-
-    -- Mini
-    use {
-        'echasnovski/mini.nvim',
-        config = function()
-            require('mini.ai').setup()
-        end
-    }
-
-    -- FTerm
-    use {
-        'numToStr/FTerm.nvim',
-        config = function()
-            vim.keymap.set('n', '<C-t>', '<Cmd>lua require("FTerm").toggle()<CR>')
-            vim.keymap.set('t', '<C-t>', '<C-\\><C-n><Cmd>lua require("FTerm").toggle()<CR>')
-        end
-    }
-
-    -- Lsp Status
-    use 'nvim-lua/lsp-status.nvim'
-
-    -- Bootstrap packer
-    if packer_bootstrap then
-        require('packer').sync()
-    end
-end)
+require("lazy").setup({
+    'editorconfig/editorconfig-vim',
+    'machakann/vim-highlightedyank',
+    'feline-nvim/feline.nvim',
+    'nvim-lua/plenary.nvim',
+    {'nvim-telescope/telescope.nvim', branch = '0.1.x' },
+    'nvim-telescope/telescope-file-browser.nvim',
+    'chriskempson/base16-vim',
+    'kyazdani42/nvim-web-devicons',
+    'hrsh7th/nvim-cmp',
+    'hrsh7th/cmp-buffer',
+    'hrsh7th/cmp-path',
+    'hrsh7th/cmp-cmdline',
+    'petertriho/cmp-git',
+    'hrsh7th/cmp-nvim-lua',
+    'hrsh7th/cmp-nvim-lsp',
+    'hrsh7th/cmp-nvim-lsp-signature-help',
+    'hrsh7th/cmp-vsnip',
+    'hrsh7th/vim-vsnip',
+    'neovim/nvim-lspconfig',
+    'nvim-lua/lsp-status.nvim',
+    'LnL7/vim-nix',
+    'NoahTheDuke/vim-just',
+    {'saecki/crates.nvim', config = true },
+    {'williamboman/mason.nvim', config = true },
+    {'lewis6991/gitsigns.nvim', config = true },
+    {'alvarosevilla95/luatab.nvim', config = true },
+    {'tpope/vim-commentary', config = function()
+        vim.keymap.set('n', '<C-_>', ':Commentary<CR>')
+        vim.keymap.set('v', '<C-_>', ':Commentary<CR>')
+    end},
+    {'uga-rosa/ccc.nvim', config = function()
+        local ccc = require('ccc')
+        local mapping = ccc.mapping
+        local opts = { noremap = true, silent = true }
+        vim.keymap.set("n", "<space>c", ":CccPick<cr>", opts)
+        ccc.setup({
+            mappings = {
+                ["<esc>"] = mapping.quit,
+            }
+        })
+    end},
+    {'echasnovski/mini.nvim', config = function()
+        require('mini.ai').setup()
+    end},
+    {'numToStr/FTerm.nvim', config = function()
+        vim.keymap.set('n', '<C-t>', '<Cmd>lua require("FTerm").toggle()<CR>')
+        vim.keymap.set('t', '<C-t>', '<C-\\><C-n><Cmd>lua require("FTerm").toggle()<CR>')
+    end},
+    {"iamcco/markdown-preview.nvim", config = function()
+        vim.fn["mkdp#util#install"]()
+    end}
+})
 
 -- Global binds
 local opts = { noremap = true, silent = true }
@@ -178,6 +110,7 @@ vim.api.nvim_command('au FocusGained,BufEnter * :silent! !')
 
 -- Custom file types
 vim.api.nvim_command('au BufNewFile,BufRead *.wgsl set syntax=rust')
+vim.api.nvim_command('au BufNewFile,BufRead *.svelte set syntax=html')
 vim.api.nvim_command('au BufNewFile,BufRead *.wgsl setlocal commentstring=//\\ %s')
 
 -- Appearance
