@@ -18,6 +18,7 @@ require("lazy").setup({
     'nvim-lua/plenary.nvim',
     {'nvim-telescope/telescope.nvim', branch = '0.1.x' },
     'nvim-telescope/telescope-file-browser.nvim',
+    'xiyaowong/telescope-emoji.nvim',
     'chriskempson/base16-vim',
     'kyazdani42/nvim-web-devicons',
     'hrsh7th/nvim-cmp',
@@ -130,6 +131,7 @@ vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
 vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
 vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
 vim.keymap.set('n', '<Space>e', '<Cmd>Telescope file_browser<CR>', opts)
+vim.keymap.set('n', '<Space>m', '<Cmd>Telescope emoji<CR>', opts)
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>l', builtin.diagnostics, opts)
 vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
@@ -137,7 +139,7 @@ vim.keymap.set('n', '<Space>d', builtin.grep_string, opts)
 vim.keymap.set('n', '<Space><Space>', builtin.resume, opts)
 
 local actions = require('telescope.actions')
-require('telescope').setup{
+require'telescope'.setup{
     defaults = {
         file_ignore_patterns = {"vendor", "NugetPackages", "node_modules"},
         mappings = {
@@ -158,6 +160,7 @@ require('telescope').setup{
     }
 }
 require'telescope'.load_extension('file_browser')
+require'telescope'.load_extension('emoji')
 
 
 -- Auto complete
