@@ -94,8 +94,9 @@ vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.scrolloff = 3
 vim.opt.softtabstop = 4
+
 vim.opt.list = true
-vim.opt.listchars = 'tab:> ,nbsp:+'
+vim.opt.listchars = 'nbsp:+'
 
 vim.api.nvim_command('filetype plugin indent on')
 vim.api.nvim_command('syntax enable')
@@ -126,16 +127,16 @@ vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
 
 -- Telescope
 local opts = { noremap = true, silent = true }
+local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
-vim.keymap.set('n', '<Space>F', '<Cmd>Telescope git_files<CR>', opts)
-vim.keymap.set('n', '<Space>r', '<Cmd>Telescope live_grep<CR>', opts)
-vim.keymap.set('n', '<Space>s', '<Cmd>Telescope git_status<CR>', opts)
+vim.keymap.set('n', '<Space>F', function() builtin.find_files({hidden = true, no_ignore = true}) end, opts)
+vim.keymap.set('n', '<Space>w', builtin.grep_string, opts)
+vim.keymap.set('n', '<Space>r', builtin.live_grep, opts)
+vim.keymap.set('n', '<Space>s', builtin.git_status, opts)
 vim.keymap.set('n', '<Space>e', '<Cmd>Telescope file_browser<CR>', opts)
 vim.keymap.set('n', '<Space>m', '<Cmd>Telescope emoji<CR>', opts)
-local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<Space>l', builtin.diagnostics, opts)
 vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
-vim.keymap.set('n', '<Space>d', builtin.grep_string, opts)
 vim.keymap.set('n', '<Space><Space>', builtin.resume, opts)
 
 local actions = require('telescope.actions')
@@ -228,8 +229,8 @@ local on_attach = function(client, bufnr)
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-    vim.keymap.set('n', '<Space>rn', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<Space>a', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
+    vim.keymap.set('n', '<F4>', vim.lsp.buf.code_action, bufopts)
     vim.keymap.set('n', '<C-f>', vim.lsp.buf.format, bufopts)
     local builtin = require('telescope.builtin')
     vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
@@ -240,7 +241,7 @@ end
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-require('lspconfig')['rust_analyzer'].setup{
+require'lspconfig'['rust_analyzer'].setup{
     on_attach = on_attach,
     capabilities = capabilities,
     -- Server-specific settings...
@@ -248,6 +249,7 @@ require('lspconfig')['rust_analyzer'].setup{
         ["rust-analyzer"] = {
             cargo = {
                 allFeatures = true,
+                -- target = "x86_64-pc-windows-gnu",
             },
             procMacro = {
                 enable = true,
@@ -267,12 +269,17 @@ require('lspconfig')['rust_analyzer'].setup{
     }
 }
 
-require('lspconfig')['wgsl_analyzer'].setup{
+require'lspconfig'['wgsl_analyzer'].setup{
     on_attach = on_attach,
     capabilities = capabilities,
 }
 
 require'lspconfig'.rnix.setup{
+    on_attach = on_attach,
+    capabilities = capabilities,
+}
+
+require'lspconfig'['gopls'].setup{
     on_attach = on_attach,
     capabilities = capabilities,
 }
