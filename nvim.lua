@@ -17,7 +17,7 @@ require("lazy").setup({
     'feline-nvim/feline.nvim',
     'nvim-lua/plenary.nvim',
     {'nvim-telescope/telescope.nvim', branch = '0.1.x' },
-    'nvim-telescope/telescope-file-browser.nvim',
+    'nvim-telescope/telescope-ui-select.nvim',
     'xiyaowong/telescope-emoji.nvim',
     'chriskempson/base16-vim',
     'kyazdani42/nvim-web-devicons',
@@ -35,8 +35,10 @@ require("lazy").setup({
     'nvim-lua/lsp-status.nvim',
     'LnL7/vim-nix',
     'NoahTheDuke/vim-just',
+    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
+    {'stevearc/oil.nvim', config = true },
     {'saecki/crates.nvim', config = true },
-    {'williamboman/mason.nvim', config = true },
     {'lewis6991/gitsigns.nvim', config = true },
     {'alvarosevilla95/luatab.nvim', config = true },
     {'tpope/vim-commentary', config = function()
@@ -74,11 +76,7 @@ vim.keymap.set('n', '<C-s>', ':w<CR>', opts)
 vim.keymap.set('i', '<C-s>', '<ESC>:w<CR>', opts)
 vim.keymap.set('v', '<C-s>', '<ESC>:w<CR>', opts)
 
--- Copy paste from system
-vim.keymap.set('n', '<Space>p', '"+p', opts)
-vim.keymap.set('n', '<Space>P', '"+P', opts)
-vim.keymap.set('n', '<Space>y', '"+y', opts)
-vim.keymap.set('n', '<Space>Y', '"+Y', opts)
+-- Paste from system
 vim.keymap.set('i', '<S-Insert>', '<C-R>+', opts)
 
 -- Global Options
@@ -95,7 +93,7 @@ vim.opt.tabstop = 4
 vim.opt.scrolloff = 3
 vim.opt.softtabstop = 4
 
-vim.opt.list = true
+vim.opt.list = false
 vim.opt.listchars = 'nbsp:+'
 
 vim.api.nvim_command('filetype plugin indent on')
@@ -133,7 +131,6 @@ vim.keymap.set('n', '<Space>F', function() builtin.find_files({hidden = true, no
 vim.keymap.set('n', '<Space>w', builtin.grep_string, opts)
 vim.keymap.set('n', '<Space>r', builtin.live_grep, opts)
 vim.keymap.set('n', '<Space>s', builtin.git_status, opts)
-vim.keymap.set('n', '<Space>e', '<Cmd>Telescope file_browser<CR>', opts)
 vim.keymap.set('n', '<Space>m', '<Cmd>Telescope emoji<CR>', opts)
 vim.keymap.set('n', '<Space>l', builtin.diagnostics, opts)
 vim.keymap.set('n', '<Space>b', builtin.builtin, opts)
@@ -160,7 +157,7 @@ require'telescope'.setup{
         }
     }
 }
-require'telescope'.load_extension('file_browser')
+require'telescope'.load_extension('ui-select')
 require'telescope'.load_extension('emoji')
 
 
@@ -216,6 +213,18 @@ local lsp_status = require('lsp-status')
 lsp_status.register_progress()
 
 -- Lsp Config
+
+require'mason'.setup()
+require'mason-lspconfig'.setup {
+    ensure_installed = {
+        'rust_analyzer',
+        'wgsl_analyzer',
+        'rnix',
+        -- 'gopls',
+        'sumneko_lua',
+    },
+}
+
 vim.diagnostic.config({
     signs = false,
 })
@@ -223,14 +232,16 @@ vim.diagnostic.config({
 local on_attach = function(client, bufnr)
     lsp_status.on_attach(client, bufnr)
     -- Enable completion triggered by <c-x><c-o>
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    -- vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- Mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<F4>', vim.lsp.buf.code_action, bufopts)
+    -- vim.keymap.set('n', '<F4>', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', '<F4>', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', '<F5>', ':LspRestart<CR>', opts)
     vim.keymap.set('n', '<C-f>', vim.lsp.buf.format, bufopts)
     local builtin = require('telescope.builtin')
     vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
@@ -269,20 +280,13 @@ require'lspconfig'['rust_analyzer'].setup{
     }
 }
 
-require'lspconfig'['wgsl_analyzer'].setup{
-    on_attach = on_attach,
-    capabilities = capabilities,
-}
-
-require'lspconfig'.rnix.setup{
-    on_attach = on_attach,
-    capabilities = capabilities,
-}
-
-require'lspconfig'['gopls'].setup{
-    on_attach = on_attach,
-    capabilities = capabilities,
-}
+local lsp_servers = {'wgsl_analyzer', 'rnix', 'gopls', 'sumneko_lua'}
+for _, v in pairs(lsp_servers) do
+    require'lspconfig'[v].setup {
+        on_attach = on_attach,
+        capabilities = capabilities,
+    }
+end
 
 -- Feline
 local components = {
