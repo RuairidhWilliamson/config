@@ -37,6 +37,7 @@ require("lazy").setup({
     'NoahTheDuke/vim-just',
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',
+    'ziglang/zig.vim',
     {'stevearc/oil.nvim', config = true },
     {'saecki/crates.nvim', config = true },
     {'lewis6991/gitsigns.nvim', config = true },
@@ -67,6 +68,22 @@ require("lazy").setup({
         vim.fn["mkdp#util#install"]()
     end}
 })
+
+-- LSP Servers
+-- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
+local lsp_servers = {
+    'rust_analyzer',
+    'wgsl_analyzer',
+    'rnix',
+    -- 'gopls',
+    'sumneko_lua',
+    'zls',
+    'taplo',
+    'svelte',
+    'clangd',
+    'bashls',
+    'pyright',
+}
 
 -- Global binds
 local opts = { noremap = true, silent = true }
@@ -216,13 +233,7 @@ lsp_status.register_progress()
 
 require'mason'.setup()
 require'mason-lspconfig'.setup {
-    ensure_installed = {
-        'rust_analyzer',
-        'wgsl_analyzer',
-        'rnix',
-        -- 'gopls',
-        'sumneko_lua',
-    },
+    ensure_installed = lsp_servers,
 }
 
 vim.diagnostic.config({
@@ -252,6 +263,13 @@ end
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+for _, v in pairs(lsp_servers) do
+    require'lspconfig'[v].setup {
+        on_attach = on_attach,
+        capabilities = capabilities,
+    }
+end
+
 require'lspconfig'['rust_analyzer'].setup{
     on_attach = on_attach,
     capabilities = capabilities,
@@ -260,7 +278,7 @@ require'lspconfig'['rust_analyzer'].setup{
         ["rust-analyzer"] = {
             cargo = {
                 allFeatures = true,
-                -- target = "x86_64-pc-windows-gnu",
+                target = "x86_64-pc-windows-gnu",
             },
             procMacro = {
                 enable = true,
@@ -280,13 +298,22 @@ require'lspconfig'['rust_analyzer'].setup{
     }
 }
 
-local lsp_servers = {'wgsl_analyzer', 'rnix', 'gopls', 'sumneko_lua'}
-for _, v in pairs(lsp_servers) do
-    require'lspconfig'[v].setup {
-        on_attach = on_attach,
-        capabilities = capabilities,
+require'lspconfig'['sumneko_lua'].setup {
+    settings = {
+        Lua = {
+            diagnostics = {
+                globals = {'vim'},
+            },
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+                checkThirdParty = false,
+            },
+            telemetry = {
+                enable = false,
+            },
+        }
     }
-end
+}
 
 -- Feline
 local components = {

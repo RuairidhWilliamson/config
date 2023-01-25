@@ -16,6 +16,9 @@ echo "Adding nvim"
 # mln ./nvim.vim ~/.config/nvim/init.vim 
 mln ./nvim.lua ~/.config/nvim/init.lua
 
+echo "Adding starship"
+mln ./starship.toml ~/.config/starship.toml
+
 echo "Adding tmux"
 mln ./tmux.conf ~/.tmux.conf
 
