@@ -2,6 +2,7 @@
 [user]
 	name = Ruairidh Williamson
 	email = williamsonruairidh@gmail.com
+	signingkey = 62446846
 
 [core]
 	editor = nvim
@@ -20,3 +21,5 @@
 	colorMoved = zebra
 [init]
 	defaultBranch = main
+[commit]
+	gpgsign = true
