@@ -141,9 +141,8 @@ vim.api.nvim_command('colorscheme base16-google-dark')
 vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
 
 -- Telescope
-local opts = { noremap = true, silent = true }
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<Space>f', '<Cmd>Telescope find_files<CR>', opts)
+vim.keymap.set('n', '<Space>f', builtin.find_files, opts)
 vim.keymap.set('n', '<Space>F', function() builtin.find_files({hidden = true, no_ignore = true}) end, opts)
 vim.keymap.set('n', '<Space>w', builtin.grep_string, opts)
 vim.keymap.set('n', '<Space>r', builtin.live_grep, opts)
@@ -254,7 +253,6 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<F4>', vim.lsp.buf.code_action, opts)
     vim.keymap.set('n', '<F5>', ':LspRestart<CR>', opts)
     vim.keymap.set('n', '<C-f>', vim.lsp.buf.format, bufopts)
-    local builtin = require('telescope.builtin')
     vim.keymap.set('n', 'gd', builtin.lsp_definitions, opts)
     vim.keymap.set('n', 'gr', builtin.lsp_references, opts)
     vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
@@ -278,7 +276,7 @@ require'lspconfig'['rust_analyzer'].setup{
         ["rust-analyzer"] = {
             cargo = {
                 allFeatures = true,
-                target = "x86_64-pc-windows-gnu",
+                -- target = "x86_64-pc-windows-gnu",
             },
             procMacro = {
                 enable = true,
@@ -482,7 +480,7 @@ components.inactive[1] = {
     {},
 }
 
-custom_providers = {
+local custom_providers = {
     lsp_status = function()
         return lsp_status.status()
     end
