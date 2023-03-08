@@ -10,10 +10,12 @@ function mln () {
 }
 
 echo "Adding alacritty"
+mkdir -p ~/.config/alacritty/
 mln ./alacritty.yml ~/.config/alacritty/alacritty.yml
 
 echo "Adding nvim"
 # mln ./nvim.vim ~/.config/nvim/init.vim 
+mkdir -p ~/.config/nvim/
 mln ./nvim.lua ~/.config/nvim/init.lua
 
 echo "Adding starship"
@@ -28,6 +30,12 @@ mln ./gitconfig ~/.gitconfig
 echo "Adding global gitignore"
 mln ./gitignore ~/.gitignore
 
+echo "Adding bashrc"
+mln ./bashrc ~/.bashrc
+
+echo "Adding nushell"
+mln ./nushell/env.nu ~/.config/nushell/env.nu
+mln ./nushell/config.nu ~/.config/nushell/config.nu
 
 echo "Adding VSCode"
 mln ./VSCode/settings.json ~/.config/Code/User/settings.json

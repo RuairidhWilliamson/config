@@ -38,6 +38,7 @@ require("lazy").setup({
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',
     'ziglang/zig.vim',
+    'elmcast/elm-vim',
     {'stevearc/oil.nvim', config = true },
     {'saecki/crates.nvim', config = true },
     {'lewis6991/gitsigns.nvim', config = true },
@@ -76,13 +77,18 @@ local lsp_servers = {
     'wgsl_analyzer',
     'rnix',
     -- 'gopls',
-    'sumneko_lua',
+    -- 'sumneko_lua',
     'zls',
     'taplo',
-    'svelte',
+    -- 'svelte',
     'clangd',
-    'bashls',
-    'pyright',
+    -- 'bashls',
+    -- 'pyright',
+    'tsserver',
+    'eslint',
+    'html',
+    'cssls',
+    'elmls',
 }
 
 -- Global binds
@@ -126,7 +132,9 @@ vim.opt.autoread = true
 vim.api.nvim_command('au FocusGained,BufEnter * :silent! !')
 
 -- Custom file types
+vim.api.nvim_command('au BufNewFile,BufRead *.ogn set syntax=json')
 vim.api.nvim_command('au BufNewFile,BufRead *.wgsl set syntax=rust')
+vim.api.nvim_command('au BufNewFile,BufRead *.ers set syntax=rust')
 vim.api.nvim_command('au BufNewFile,BufRead *.svelte set syntax=html')
 vim.api.nvim_command('au BufNewFile,BufRead *.wgsl setlocal commentstring=//\\ %s')
 
@@ -142,7 +150,7 @@ vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
 
 -- Telescope
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<Space>f', builtin.find_files, opts)
+vim.keymap.set('n', '<Space>f', function() builtin.find_files({hidden = false}) end, opts)
 vim.keymap.set('n', '<Space>F', function() builtin.find_files({hidden = true, no_ignore = true}) end, opts)
 vim.keymap.set('n', '<Space>w', builtin.grep_string, opts)
 vim.keymap.set('n', '<Space>r', builtin.live_grep, opts)
@@ -296,22 +304,38 @@ require'lspconfig'['rust_analyzer'].setup{
     }
 }
 
-require'lspconfig'['sumneko_lua'].setup {
+require'lspconfig'['tsserver'].setup{
+    on_attach = on_attach,
+    capabilities = capabilities,
     settings = {
-        Lua = {
-            diagnostics = {
-                globals = {'vim'},
-            },
-            workspace = {
-                library = vim.api.nvim_get_runtime_file("", true),
-                checkThirdParty = false,
-            },
-            telemetry = {
-                enable = false,
-            },
-        }
-    }
+        completions = {
+            completeFunctionCalls = true,
+        },
+    },
 }
+
+require'lspconfig'['elmls'].setup{
+    on_attach = on_attach,
+    capabilities = capabilities,
+    root_dir = require'lspconfig'.util.root_pattern('elm.json'),
+}
+
+-- require'lspconfig'['sumneko_lua'].setup {
+--     settings = {
+--         Lua = {
+--             diagnostics = {
+--                 globals = {'vim'},
+--             },
+--             workspace = {
+--                 library = vim.api.nvim_get_runtime_file("", true),
+--                 checkThirdParty = false,
+--             },
+--             telemetry = {
+--                 enable = false,
+--             },
+--         }
+--     }
+-- }
 
 -- Feline
 local components = {

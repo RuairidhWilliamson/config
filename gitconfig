@@ -2,7 +2,7 @@
 [user]
 	name = Ruairidh Williamson
 	email = williamsonruairidh@gmail.com
-	signingkey = 62446846
+	signingkey = EAA006E5A893E9B0
 
 [core]
 	editor = nvim
