@@ -118,9 +118,10 @@ fi
 . "$HOME/.cargo/env"
 
 eval "$(starship init bash)"
+eval "$(~/.cargo/bin/rtx activate bash)"
 
 # pnpm
-export PNPM_HOME="~/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 alias pn=pnpm
 # pnpm end

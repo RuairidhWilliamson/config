@@ -40,3 +40,6 @@ mln ./nushell/config.nu ~/.config/nushell/config.nu
 echo "Adding VSCode"
 mln ./VSCode/settings.json ~/.config/Code/User/settings.json
 mln ./VSCode/keybindings.json ~/.config/Code/User/keybindings.json
+
+echo "Adding fish"
+mln ./config.fish ~/.config/fish/config.fish

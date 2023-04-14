@@ -23,3 +23,5 @@
 	defaultBranch = main
 [commit]
 	gpgsign = true
+[alias]
+	versions = tag --sort=v:refname
