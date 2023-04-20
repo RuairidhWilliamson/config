@@ -39,6 +39,9 @@ require("lazy").setup({
     'williamboman/mason-lspconfig.nvim',
     'ziglang/zig.vim',
     'elmcast/elm-vim',
+    'nvim-treesitter/nvim-treesitter',
+    'nvim-treesitter/playground',
+    'navarasu/onedark.nvim',
     {'stevearc/oil.nvim', config = true },
     {'saecki/crates.nvim', config = true },
     {'lewis6991/gitsigns.nvim', config = true },
@@ -73,7 +76,7 @@ require("lazy").setup({
 -- LSP Servers
 -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 local lsp_servers = {
-    'rust_analyzer',
+    -- 'rust_analyzer',
     'wgsl_analyzer',
     'rnix',
     -- 'gopls',
@@ -143,7 +146,24 @@ vim.opt.guifont = 'Cascadia Code:h11'
 vim.opt.guifont = 'RobotoMono Nerd Font'
 vim.opt.termguicolors = true
 vim.opt.background = 'dark'
-vim.api.nvim_command('colorscheme base16-google-dark')
+require'nvim-treesitter.configs'.setup {
+    ensure_installed = { "c", "lua", "bash", "cpp", "css", "elm", "fish", "git_config", "git_rebase", "gitcommit", "gitignore", "html", "json", "proto", "rust", "python", "scss", "typescript", "wgsl", "zig" }
+}
+require'onedark'.setup {
+    style = 'darker'
+}
+require'onedark'.load()
+vim.api.nvim_set_hl(0, 'Identifier', { link = '@lsp' })
+-- vim.api.nvim_command('hi Identifier ctermfg=7 guifg=#c5c8c6')
+-- vim.api.nvim_set_hl(0, 'Structure', { link = 'Type' })
+-- vim.api.nvim_set_hl(0, 'Include', { link = 'Keyword' })
+-- vim.api.nvim_set_hl(0, 'Delimiter', { link = 'Identifier' })
+-- vim.api.nvim_set_hl(0, '@lsp.type.namespace.rust', { link = 'Comment' })
+-- for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
+--   vim.api.nvim_set_hl(0, group, {})
+-- end
+-- vim.api.nvim_command('hi link Structure Type')
+-- vim.api.nvim_command('hi rustExternCrate ctermfg=4 guifg=#3971ed')
 
 -- Neovide
 vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
