@@ -77,13 +77,8 @@ require("lazy").setup({
 -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 local lsp_servers = {
     -- 'rust_analyzer',
-    'wgsl_analyzer',
-    'rnix',
-    -- 'gopls',
     -- 'sumneko_lua',
-    'zls',
     'taplo',
-    -- 'svelte',
     'clangd',
     -- 'bashls',
     -- 'pyright',
@@ -93,6 +88,17 @@ local lsp_servers = {
     'cssls',
     'elmls',
 }
+
+if vim.loop.os_uname().sysname == 'Linux' then
+    table.insert(lsp_servers, 'zls')
+    table.insert(lsp_servers, 'wgsl_analyzer')
+    table.insert(lsp_servers, 'rnix')
+    table.insert(lsp_servers, 'svelte')
+end
+
+if vim.loop.os_uname().sysname == 'Darwin' then
+    table.insert(lsp_servers, 'gopls')
+end
 
 -- Global binds
 local opts = { noremap = true, silent = true }
@@ -318,6 +324,9 @@ require'lspconfig'['rust_analyzer'].setup{
             completion = {
                 postfix = {
                     enable = false,
+                },
+                privateEditable = {
+                    enable = true,
                 },
             },
         }

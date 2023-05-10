@@ -25,3 +25,4 @@
 	gpgsign = true
 [alias]
 	versions = tag --sort=v:refname
+	st = status
