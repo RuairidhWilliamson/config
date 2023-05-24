@@ -175,8 +175,15 @@ vim.api.nvim_set_hl(0, 'Identifier', { link = '@lsp' })
 vim.api.nvim_command('let g:neovide_cursor_animation_length = 0')
 
 -- Telescope
+require('telescope').setup({
+    pickers = {
+        find_files = {
+            find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+        },
+    },
+})
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<Space>f', function() builtin.find_files({hidden = false}) end, opts)
+vim.keymap.set('n', '<Space>f', function() builtin.find_files({hidden = true}) end, opts)
 vim.keymap.set('n', '<Space>F', function() builtin.find_files({hidden = true, no_ignore = true}) end, opts)
 vim.keymap.set('n', '<Space>w', builtin.grep_string, opts)
 vim.keymap.set('n', '<Space>r', builtin.live_grep, opts)
@@ -283,6 +290,7 @@ local on_attach = function(client, bufnr)
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
+    vim.keymap.set('n', '<F3>', ':RustOpenDocs<CR>', bufopts)
     -- vim.keymap.set('n', '<F4>', vim.lsp.buf.code_action, bufopts)
     vim.keymap.set('n', '<F4>', vim.lsp.buf.code_action, opts)
     vim.keymap.set('n', '<F5>', ':LspRestart<CR>', opts)
@@ -305,6 +313,20 @@ end
 require'lspconfig'['rust_analyzer'].setup{
     on_attach = on_attach,
     capabilities = capabilities,
+    commands = {
+        RustOpenDocs = {
+            function()
+                vim.lsp.buf_request(vim.api.nvim_get_current_buf(), 'experimental/externalDocs', vim.lsp.util.make_position_params(), function(err, url)
+                    if err then
+                        error(tostring(err))
+                    else
+                        vim.fn['netrw#BrowseX'](url, 0)
+                    end
+                end)
+            end,
+            description = 'Open docs for symbol under cursor',
+        },
+    },
     -- Server-specific settings...
     settings = {
         ["rust-analyzer"] = {
