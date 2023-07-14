@@ -50,17 +50,6 @@ require("lazy").setup({
         vim.keymap.set('n', '<C-_>', ':Commentary<CR>')
         vim.keymap.set('v', '<C-_>', ':Commentary<CR>')
     end},
-    {'uga-rosa/ccc.nvim', config = function()
-        local ccc = require('ccc')
-        local mapping = ccc.mapping
-        local opts = { noremap = true, silent = true }
-        vim.keymap.set("n", "<space>c", ":CccPick<cr>", opts)
-        ccc.setup({
-            mappings = {
-                ["<esc>"] = mapping.quit,
-            }
-        })
-    end},
     {'echasnovski/mini.nvim', config = function()
         require('mini.ai').setup()
     end},
@@ -94,6 +83,7 @@ if vim.loop.os_uname().sysname == 'Linux' then
     table.insert(lsp_servers, 'wgsl_analyzer')
     table.insert(lsp_servers, 'rnix')
     table.insert(lsp_servers, 'svelte')
+    table.insert(lsp_servers, 'gopls')
 end
 
 if vim.loop.os_uname().sysname == 'Darwin' then
@@ -146,6 +136,7 @@ vim.api.nvim_command('au BufNewFile,BufRead *.wgsl set syntax=rust')
 vim.api.nvim_command('au BufNewFile,BufRead *.ers set syntax=rust')
 vim.api.nvim_command('au BufNewFile,BufRead *.svelte set syntax=html')
 vim.api.nvim_command('au BufNewFile,BufRead *.wgsl setlocal commentstring=//\\ %s')
+vim.api.nvim_command('set nowrap')
 
 -- Appearance
 vim.opt.guifont = 'Cascadia Code:h11'

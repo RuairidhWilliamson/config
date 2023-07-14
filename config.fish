@@ -1,5 +1,6 @@
 set PATH $HOME/.cargo/bin $PATH
 set PATH $HOME/.local/bin $PATH
+set PATH /usr/local/go/bin $PATH
 
 # pnpm
 set PNPM_HOME $HOME/.local/share/pnpm
