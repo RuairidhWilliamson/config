@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function mln () {
     if [ -L $2 ]
@@ -34,12 +34,24 @@ echo "Adding bashrc"
 mln ./bashrc ~/.bashrc
 
 echo "Adding nushell"
+mkdir -p ~/.config/nushell/
 mln ./nushell/env.nu ~/.config/nushell/env.nu
 mln ./nushell/config.nu ~/.config/nushell/config.nu
 
 echo "Adding VSCode"
+mkdir -p ~/.config/Code/User/
 mln ./VSCode/settings.json ~/.config/Code/User/settings.json
 mln ./VSCode/keybindings.json ~/.config/Code/User/keybindings.json
 
 echo "Adding fish"
+mkdir -p ~/.config/fish/
 mln ./config.fish ~/.config/fish/config.fish
+
+echo "Adding hyprland"
+mkdir -p ~/.config/hypr/
+mln ./hyprland.conf ~/.config/hypr/hyprland.conf
+mln ./hyprpaper.conf ~/.config/hypr/hyprpaper.conf
+
+echo "Adding waybar"
+mkdir -p ~/.config/waybar/
+mln ./waybar.json ~/.config/waybar/config

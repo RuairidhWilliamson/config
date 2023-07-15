@@ -35,8 +35,8 @@ require("lazy").setup({
     'nvim-lua/lsp-status.nvim',
     'LnL7/vim-nix',
     'NoahTheDuke/vim-just',
-    'williamboman/mason.nvim',
-    'williamboman/mason-lspconfig.nvim',
+    -- 'williamboman/mason.nvim',
+    -- 'williamboman/mason-lspconfig.nvim',
     'ziglang/zig.vim',
     'elmcast/elm-vim',
     'nvim-treesitter/nvim-treesitter',
@@ -57,9 +57,9 @@ require("lazy").setup({
         vim.keymap.set('n', '<C-t>', '<Cmd>lua require("FTerm").toggle()<CR>')
         vim.keymap.set('t', '<C-t>', '<C-\\><C-n><Cmd>lua require("FTerm").toggle()<CR>')
     end},
-    {"iamcco/markdown-preview.nvim", config = function()
-        vim.fn["mkdp#util#install"]()
-    end}
+    -- {"iamcco/markdown-preview.nvim", config = function()
+    --     vim.fn["mkdp#util#install"]()
+    -- end}
 })
 
 -- LSP Servers
@@ -67,15 +67,15 @@ require("lazy").setup({
 local lsp_servers = {
     -- 'rust_analyzer',
     -- 'sumneko_lua',
-    'taplo',
-    'clangd',
+    -- 'taplo',
+    -- 'clangd',
     -- 'bashls',
     -- 'pyright',
-    'tsserver',
-    'eslint',
-    'html',
-    'cssls',
-    'elmls',
+    -- 'tsserver',
+    -- 'eslint',
+    -- 'html',
+    -- 'cssls',
+    -- 'elmls',
 }
 
 if vim.loop.os_uname().sysname == 'Linux' then
@@ -262,10 +262,10 @@ lsp_status.register_progress()
 
 -- Lsp Config
 
-require'mason'.setup()
-require'mason-lspconfig'.setup {
-    ensure_installed = lsp_servers,
-}
+-- require'mason'.setup()
+-- require'mason-lspconfig'.setup {
+--     ensure_installed = lsp_servers,
+-- }
 
 vim.diagnostic.config({
     signs = false,
