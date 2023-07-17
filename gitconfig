@@ -22,7 +22,7 @@
 [init]
 	defaultBranch = main
 [commit]
-	gpgsign = true
+	gpgsign = false
 [alias]
 	versions = tag --sort=v:refname
 	st = status

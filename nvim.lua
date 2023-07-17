@@ -65,15 +65,15 @@ require("lazy").setup({
 -- LSP Servers
 -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 local lsp_servers = {
-    -- 'rust_analyzer',
+    'rust_analyzer',
     -- 'sumneko_lua',
     -- 'taplo',
     -- 'clangd',
-    -- 'bashls',
-    -- 'pyright',
-    -- 'tsserver',
-    -- 'eslint',
-    -- 'html',
+    'bashls',
+    'pyright',
+    'tsserver',
+    'eslint',
+    'html',
     -- 'cssls',
     -- 'elmls',
 }
