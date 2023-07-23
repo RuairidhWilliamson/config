@@ -115,10 +115,10 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-. "$HOME/.cargo/env"
+export PATH="$HOME/.cargo/bin:$PATH"
 
 eval "$(starship init bash)"
-eval "$(~/.cargo/bin/rtx activate bash)"
+# eval "$(~/.cargo/bin/rtx activate bash)"
 
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"

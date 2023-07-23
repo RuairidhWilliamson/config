@@ -1,0 +1,88 @@
+(defwidget bar []
+    (centerbox :orientation "h"
+        (box)
+        (box)
+        (box :halign "end"
+            :orientation "h"
+            :space-evenly false
+            (stats)
+            (clock)
+        )
+    )
+)
+
+(defwidget stats []
+    (box :class "stats"
+         :orientation "h"
+         :halign "end"
+        "CPU: ${round(EWW_CPU.avg, 1)} % "
+        "Mem: ${round(EWW_RAM.used_mem_perc, 1)} % "
+        "Disk: ${round(EWW_DISK["/"].used_perc, 1)} %"
+    )
+)
+
+(defpoll time :interval "10s" `date "+%H:%M   %d %b"`)
+(defwidget clock []
+    (box :class "clock"
+        :orientation "h"
+        :halign "end"
+        time
+    )
+)
+
+(defpoll backgroundtime :interval "10s" `date "+%H:%M"`)
+(defwidget backgroundclock []
+    (box :class "background-clock"
+        :orientation "h"
+        :halign "center"
+        :valign "start"
+        backgroundtime
+    )
+)
+
+(defwindow bar0
+    :monitor 0
+    :geometry (geometry :x "0%"
+                        :y "5px"
+                        :width "100%"
+                        :height "30px"
+                        :anchor "top center")
+    :stacking "fg"
+    :exclusive true
+    (bar)
+)
+
+(defwindow bar1
+    :monitor 1
+    :geometry (geometry :x "0%"
+                        :y "5px"
+                        :width "100%"
+                        :height "30px"
+                        :anchor "top center")
+    :stacking "fg"
+    :exclusive true
+    (bar)
+)
+
+(defwindow backgroundclock0
+    :monitor 0
+    :geometry (geometry :x "0%"
+                        :y "20%"
+                        :width "20%"
+                        :height "20%"
+                        :anchor "top center")
+    :stacking "bg"
+    (backgroundclock)
+)
+
+(defwindow backgroundclock1
+    :monitor 1
+    :geometry (geometry :x "0%"
+                        :y "20%"
+                        :width "20%"
+                        :height "20%"
+                        :anchor "top center")
+    :stacking "bg"
+    (backgroundclock)
+)
+

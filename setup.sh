@@ -52,6 +52,5 @@ mkdir -p ~/.config/hypr/
 mln ./hyprland.conf ~/.config/hypr/hyprland.conf
 mln ./hyprpaper.conf ~/.config/hypr/hyprpaper.conf
 
-echo "Adding waybar"
-mkdir -p ~/.config/waybar/
-mln ./waybar.json ~/.config/waybar/config
+echo "Adding eww"
+ln -sfr ./eww/ ~/.config/eww

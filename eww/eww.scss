@@ -1,0 +1,18 @@
+* {
+    all: unset;
+}
+
+.clock, .stats {
+    background-color: rgba(30, 30, 30, 0.5);
+    border-radius: 10px;
+    padding: 0 10px;
+    margin-right: 10px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.background-clock {
+    font-size: 72px;
+    font-weight: 500;
+    color: #3C707B;
+}
