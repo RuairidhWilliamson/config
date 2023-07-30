@@ -17,7 +17,6 @@
          :halign "end"
         "CPU: ${round(EWW_CPU.avg, 1)} % "
         "Mem: ${round(EWW_RAM.used_mem_perc, 1)} % "
-        "Disk: ${round(EWW_DISK["/"].used_perc, 1)} %"
     )
 )
 

@@ -17,4 +17,5 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
     # use the coolbeans theme
     # fish_config theme choose coolbeans
+    zoxide init fish | source
 end
