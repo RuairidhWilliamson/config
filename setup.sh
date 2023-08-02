@@ -43,3 +43,6 @@ mln ./VSCode/keybindings.json ~/.config/Code/User/keybindings.json
 
 echo "Adding fish"
 mln ./config.fish ~/.config/fish/config.fish
+
+echo "Adding helix"
+mln ./helix.toml ~/.config/helix/config.toml
