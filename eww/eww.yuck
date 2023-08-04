@@ -44,9 +44,9 @@
     :geometry (geometry :x "0%"
                         :y "5px"
                         :width "100%"
-                        :height "30px"
+                        :height "25px"
                         :anchor "top center")
-    :stacking "fg"
+    :stacking "bg"
     :exclusive true
     (bar)
 )
@@ -56,9 +56,9 @@
     :geometry (geometry :x "0%"
                         :y "5px"
                         :width "100%"
-                        :height "30px"
+                        :height "25px"
                         :anchor "top center")
-    :stacking "fg"
+    :stacking "bg"
     :exclusive true
     (bar)
 )
