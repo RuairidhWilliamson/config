@@ -5,6 +5,7 @@
         (box :halign "end"
             :orientation "h"
             :space-evenly false
+            (volumeBar)
             (stats)
             (clock)
         )
@@ -17,6 +18,17 @@
          :halign "end"
         "CPU: ${round(EWW_CPU.avg, 1)} % "
         "Mem: ${round(EWW_RAM.used_mem_perc, 1)} % "
+    )
+)
+
+(defpoll volume :interval "1s" "wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -c 11-12")
+(defwidget volumeBar []
+    (box :orientation "h" :class "volume-bar"
+        (scale :min 0
+            :max 100
+            :value volume
+            :halign "end"
+        )
     )
 )
 

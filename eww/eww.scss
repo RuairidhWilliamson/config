@@ -2,7 +2,7 @@
     all: unset;
 }
 
-.clock, .stats {
+.clock, .stats, .volume-bar {
     background-color: rgba(30, 30, 30, 0.5);
     border-radius: 10px;
     padding: 0 10px;
@@ -15,4 +15,18 @@
     font-size: 72px;
     font-weight: 500;
     color: #3C707B;
+}
+
+scale trough {
+    background-color: #888;
+    color: #000;
+    min-width: 100px;
+    min-height: 10px;
+    border-radius: 5px;
+
+    highlight {
+        background-color: #FF3300;
+        color: #000;
+        border-radius: 5px;
+    }
 }
