@@ -54,3 +54,6 @@ mln ./hyprpaper.conf ~/.config/hypr/hyprpaper.conf
 
 echo "Adding eww"
 ln -sfr ./eww/ ~/.config/eww
+
+echo "Adding helix"
+mln ./helix.toml ~/.config/helix/config.toml
