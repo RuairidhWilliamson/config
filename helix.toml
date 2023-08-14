@@ -1,4 +1,4 @@
-theme = "default"
+theme = "ayu_dark"
 
 [editor]
 
@@ -6,6 +6,12 @@ theme = "default"
 insert = "bar"
 normal = "block"
 select = "underline"
+
+[keys.normal]
+C-s = ":w"
+
+[keys.insert]
+C-s = [":w", "normal_mode"]
 
 [editor.file-picker]
 hidden = false

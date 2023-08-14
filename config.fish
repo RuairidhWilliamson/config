@@ -12,3 +12,6 @@ set PATH $HOME/.local/share/bob/nvim-bin $PATH
 
 # rtx activate fish | source
 starship init fish | source
+
+# direnv
+direnv hook fish | source

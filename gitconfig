@@ -5,7 +5,7 @@
 	signingkey = EAA006E5A893E9B0
 
 [core]
-	editor = nvim
+	editor = hx
 	excludesFile = ~/.gitignore
 
 [url "ssh://git@github.com/williamsonruairidh"]
