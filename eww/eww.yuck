@@ -6,7 +6,7 @@
             :orientation "h"
             :space-evenly false
             (volumeBar)
-            (stats)
+            ; (stats)
             (clock)
         )
     )
