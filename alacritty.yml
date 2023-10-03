@@ -1,6 +1,6 @@
-# font:
-#   normal:
-    # family: RobotoMono Nerd Font Mono
+font:
+  normal:
+    family: RobotoMono Nerd Font Mono
 env:
   TERM: xterm-256color
 window:

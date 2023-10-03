@@ -3,15 +3,19 @@ set PATH $HOME/.local/bin $PATH
 set PATH /usr/local/go/bin $PATH
 
 # pnpm
-set PNPM_HOME $HOME/.local/share/pnpm
-set PATH $PNPM_HOME $PATH
+# set PNPM_HOME $HOME/.local/share/pnpm
+# set PATH $PNPM_HOME $PATH
 # pnpm end
 
 # bob nvim
-set PATH $HOME/.local/share/bob/nvim-bin $PATH
+# set PATH $HOME/.local/share/bob/nvim-bin $PATH
 
 # rtx activate fish | source
 starship init fish | source
 
 # direnv
-direnv hook fish | source
+# direnv hook fish | source
+
+alias ls="eza --icons"
+
+set -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
