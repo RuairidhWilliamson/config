@@ -5,7 +5,7 @@
         (box :halign "end"
             :orientation "h"
             :space-evenly false
-            (volumeBar)
+            ; (volumeBar)
             ; (stats)
             (clock)
         )
