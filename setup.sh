@@ -51,9 +51,14 @@ echo "Adding hyprland"
 mkdir -p ~/.config/hypr/
 mln ./hyprland.conf ~/.config/hypr/hyprland.conf
 mln ./hyprpaper.conf ~/.config/hypr/hyprpaper.conf
+mln ./lock.sh ~/.config/lock.sh
 
 echo "Adding eww"
-ln -sfr ./eww/ ~/.config/eww
+ln -sfr ./eww/ ~/.config/eww/
 
 echo "Adding helix"
 mln ./helix.toml ~/.config/helix/config.toml
+
+echo "Adding gpg config"
+mkdir -p ~/.gnupg/
+mln ./gpg/gpg-agent.conf ~/.gnupg/gpg-agent.conf
