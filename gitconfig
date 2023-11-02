@@ -2,7 +2,7 @@
 [user]
 	name = Ruairidh Williamson
 	email = williamsonruairidh@gmail.com
-	signingkey = 3791BE2341054B4E
+	signingkey = ~/.ssh/id_ed25519.pub
 
 [core]
 	editor = hx
@@ -27,4 +27,4 @@
 	versions = tag --sort=v:refname
 	st = status
 [gpg]
-	program = gpg2
+	format = ssh
