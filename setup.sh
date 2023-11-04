@@ -54,11 +54,10 @@ mln ./hyprpaper.conf ~/.config/hypr/hyprpaper.conf
 mln ./lock.sh ~/.config/lock.sh
 
 echo "Adding eww"
-ln -sfr ./eww/ ~/.config/eww/
+mln ./eww ~/.config/eww
 
 echo "Adding helix"
 mln ./helix.toml ~/.config/helix/config.toml
 
-echo "Adding gpg config"
-mkdir -p ~/.gnupg/
-mln ./gpg/gpg-agent.conf ~/.gnupg/gpg-agent.conf
+echo "Adding ssh-agent service"
+mln ./ssh-agent.service ~/.config/systemd/user/ssh-agent.service
