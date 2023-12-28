@@ -11,7 +11,7 @@ function mln () {
 
 echo "Adding alacritty"
 mkdir -p ~/.config/alacritty/
-mln ./alacritty.yml ~/.config/alacritty/alacritty.yml
+mln ./alacritty.toml ~/.config/alacritty/alacritty.toml
 
 echo "Adding nvim"
 # mln ./nvim.vim ~/.config/nvim/init.vim 
@@ -54,10 +54,16 @@ mln ./hyprpaper.conf ~/.config/hypr/hyprpaper.conf
 mln ./lock.sh ~/.config/lock.sh
 
 echo "Adding eww"
-mln ./eww ~/.config/eww
+mln ./eww/eww.scss ~/.config/eww/eww.scss
 
 echo "Adding helix"
 mln ./helix.toml ~/.config/helix/config.toml
 
 echo "Adding ssh-agent service"
 mln ./ssh-agent.service ~/.config/systemd/user/ssh-agent.service
+
+echo "Adding allowed signers"
+mln ./allowed_signers ~/.ssh/allowed_signers
+
+echo "Adding bacon"
+mln ./bacon.toml ~/.config/bacon/prefs.toml

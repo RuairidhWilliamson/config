@@ -17,3 +17,4 @@ starship init fish | source
 # direnv hook fish | source
 
 alias ls="eza --icons"
+set SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket

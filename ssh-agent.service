@@ -3,7 +3,7 @@ Description=SSH Key Agent
 
 [Service]
 Type=service
-Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
+Environment=SSH_AGENT_SOCK=%t/ssh-agent.socket
 ExecStart=/usr/bin/ssh-agent -D -a $SSH_AGENT_SOCK
 
 [Install]

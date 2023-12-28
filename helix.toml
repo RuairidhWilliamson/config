@@ -12,6 +12,7 @@ C-s = ":w"
 
 [keys.insert]
 C-s = [":w", "normal_mode"]
+"C-[" = ["normal_mode"]
 
 [editor.file-picker]
 hidden = false
