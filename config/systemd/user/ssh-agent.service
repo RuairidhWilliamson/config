@@ -1,0 +1,10 @@
+[Unit]
+Description=SSH Key Agent
+
+[Service]
+Type=service
+Environment=SSH_AGENT_SOCK=%t/ssh-agent.socket
+ExecStart=/usr/bin/ssh-agent -D -a $SSH_AGENT_SOCK
+
+[Install]
+WantedBy=default.target

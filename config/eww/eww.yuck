@@ -1,6 +1,10 @@
-(defwidget bar []
+(defwidget bar [monitor]
     (centerbox :orientation "h"
-        (box)
+        (box :halign "start"
+            :orientation "h"
+            :space-evenly false
+            (workspaces :monitor monitor)
+        )
         (box)
         (box :halign "end"
             :orientation "h"
@@ -8,6 +12,20 @@
             ; (volumeBar)
             ; (stats)
             (clock)
+        )
+    )
+)
+
+(deflisten workspaces0 :initial "[]" "eww-hypr workspaces 0")
+(deflisten workspaces1 :initial "[]" "eww-hypr workspaces 1")
+(defwidget workspaces [monitor]
+    (box :space-evenly true
+        (for workspace in {monitor == 0 ? workspaces0 : workspaces1 }
+            (eventbox :onclick "hyprctl dispatch workspace ${workspace.id}"
+                (box :class "workspace-entry ${workspace.active ? "current" : ""} ${workspace.windows > 0 ? "occupied" : "empty"}"
+                    (label :text "${workspace.id}")
+                )
+            )
         )
     )
 )
@@ -32,7 +50,7 @@
     )
 )
 
-(defpoll time :interval "10s" `date "+%H:%M   %d %b"`)
+(deflisten time :initial "" "eww-hypr clock '%H:%M  %e %b'")
 (defwidget clock []
     (box :class "clock"
         :orientation "h"
@@ -41,7 +59,7 @@
     )
 )
 
-(defpoll backgroundtime :interval "10s" `date "+%H:%M"`)
+(deflisten backgroundtime :initial "" "eww-hypr clock '%H:%M'")
 (defwidget backgroundclock []
     (box :class "background-clock"
         :orientation "h"
@@ -51,43 +69,20 @@
     )
 )
 
-(defwindow bar0
-    :monitor 0
+(defwindow barw [mon]
+    :monitor mon
     :geometry (geometry :x "0%"
-                        :y "5px"
+                        :y "0px"
                         :width "100%"
-                        :height "25px"
+                        :height "20px"
                         :anchor "top center")
     :stacking "bg"
     :exclusive true
-    (bar)
+    (bar :monitor mon)
 )
 
-(defwindow bar1
-    :monitor 1
-    :geometry (geometry :x "0%"
-                        :y "5px"
-                        :width "100%"
-                        :height "25px"
-                        :anchor "top center")
-    :stacking "bg"
-    :exclusive true
-    (bar)
-)
-
-(defwindow backgroundclock0
-    :monitor 0
-    :geometry (geometry :x "0%"
-                        :y "20%"
-                        :width "20%"
-                        :height "20%"
-                        :anchor "top center")
-    :stacking "bg"
-    (backgroundclock)
-)
-
-(defwindow backgroundclock1
-    :monitor 1
+(defwindow clockw [mon]
+    :monitor mon
     :geometry (geometry :x "0%"
                         :y "20%"
                         :width "20%"

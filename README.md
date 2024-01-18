@@ -1,3 +1,3 @@
 # config
 
-Place anywhere then run `setup.sh` and it will create symlinks and config copies.
+Place anywhere then run `copy.sh` and it will copy config into place.
