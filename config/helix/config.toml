@@ -14,5 +14,10 @@ C-s = ":w"
 C-s = [":w", "normal_mode"]
 "C-[" = ["normal_mode"]
 
+[editor.statusline]
+left = ["mode", "spinner"]
+center = ["file-name"]
+right = ["diagnostics", "selections", "positions", "file-encoding", "file-line-ending", "file-type"]
+
 [editor.file-picker]
 hidden = false
