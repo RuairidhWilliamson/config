@@ -17,7 +17,7 @@ C-s = [":w", "normal_mode"]
 [editor.statusline]
 left = ["mode", "spinner"]
 center = ["file-name"]
-right = ["diagnostics", "selections", "positions", "file-encoding", "file-line-ending", "file-type"]
+right = ["diagnostics", "selections", "file-encoding", "file-line-ending", "file-type"]
 
 [editor.file-picker]
 hidden = false

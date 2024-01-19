@@ -5,4 +5,4 @@ set PATH /usr/local/go/bin $PATH
 starship init fish | source
 
 alias ls="eza --icons"
-set SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
+set -gx SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
