@@ -12,6 +12,7 @@ enum Cli {
     Workspaces { monitor_id: u32 },
     Clock { format: String },
     ToggleSpeakers,
+    CurrentSpeakers,
 }
 
 fn main() -> std::io::Result<()> {
@@ -21,6 +22,7 @@ fn main() -> std::io::Result<()> {
         Cli::Workspaces { monitor_id } => watch_workspaces(monitor_id)?,
         Cli::Clock { format } => watch_clock(&format),
         Cli::ToggleSpeakers => toggle_speakers(),
+        Cli::CurrentSpeakers => current_speakers(),
     }
 
     Ok(())
@@ -163,6 +165,35 @@ fn toggle_speakers() {
                 {
                     eprintln!("set default failed");
                 }
+            }
+        }
+    }
+}
+
+fn current_speakers() {
+    let mut in_audio = false;
+    let mut in_audio_sinks = false;
+    for line in std::process::Command::new("wpctl")
+        .arg("status")
+        .arg("-n")
+        .output()
+        .unwrap()
+        .stdout
+        .lines()
+    {
+        let line = line.unwrap();
+        if line.contains("Audio") {
+            in_audio = true;
+        }
+        if in_audio && line.contains("Sinks:") {
+            in_audio_sinks = true;
+        }
+        if in_audio_sinks && line.contains("Sink endpoints:") {
+            in_audio_sinks = false;
+        }
+        if in_audio_sinks && line.contains(". alsa_output") {
+            if line.contains("*") {
+                eprintln!("{line}");
             }
         }
     }
