@@ -26,6 +26,8 @@
 [alias]
 	versions = tag --sort=v:refname
 	st = status
+	sw = switch
+	pushf = push --force-with-lease --force-if-includes
 [gpg]
 	format = ssh
 [gpg "ssh"]

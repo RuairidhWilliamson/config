@@ -1,3 +1,26 @@
+(defwindow barw [mon]
+    :monitor mon
+    :geometry (geometry :x "0%"
+                        :y "0px"
+                        :width "100%"
+                        :height "20px"
+                        :anchor "top center")
+    :stacking "bg"
+    :exclusive true
+    (bar :monitor mon)
+)
+
+(defwindow clockw [mon]
+    :monitor mon
+    :geometry (geometry :x "0%"
+                        :y "20%"
+                        :width "20%"
+                        :height "20%"
+                        :anchor "top center")
+    :stacking "bg"
+    (backgroundclock)
+)
+
 (defwidget bar [monitor]
     (centerbox :orientation "h"
         (box :halign "start"
@@ -11,9 +34,36 @@
             :space-evenly false
             ; (volumeBar)
             ; (stats)
+            (audioout)
             (clock)
+            ; (powermenu)
         )
     )
+)
+
+(defwindow powerdrop [mon]
+    :monitor mon
+    :geometry (geometry :x "50%"
+                        :y "20%"
+                        :width "200px"
+                        :height "300px"
+                        :anchor "center center")
+    :stacking "fg"
+    (box :orientation "v"
+        ; (button :class "container" :onclick "systemctl poweroff" "Lock")
+        (button :class "container" :onclick "loginctl terminate-user $(whoami)" "Log Out")
+        (button :class "container" :onclick "systemctl reboot" "Restart")
+        (button :class "container" :onclick "systemctl poweroff" "Power Off")
+        (button :class "container" :onclick "eww close powerdrop" "Cancel")
+    )
+)
+
+(defwidget powermenu []
+    (button :class "container" :onclick "eww open powerdrop --arg mon=0" "⏻")
+)
+
+(defwidget audioout []
+    (button :class "container" :onclick "eww-hypr toggle-speakers" "🎧")
 )
 
 (deflisten workspaces0 :initial "[]" "eww-hypr workspaces 0")
@@ -59,7 +109,7 @@
     )
 )
 
-(deflisten backgroundtime :initial "" "eww-hypr clock '%H:%M'")
+(deflisten backgroundtime :initial "" "eww-hypr clock '%H %M'")
 (defwidget backgroundclock []
     (box :class "background-clock"
         :orientation "h"
@@ -68,27 +118,3 @@
         backgroundtime
     )
 )
-
-(defwindow barw [mon]
-    :monitor mon
-    :geometry (geometry :x "0%"
-                        :y "0px"
-                        :width "100%"
-                        :height "20px"
-                        :anchor "top center")
-    :stacking "bg"
-    :exclusive true
-    (bar :monitor mon)
-)
-
-(defwindow clockw [mon]
-    :monitor mon
-    :geometry (geometry :x "0%"
-                        :y "20%"
-                        :width "20%"
-                        :height "20%"
-                        :anchor "top center")
-    :stacking "bg"
-    (backgroundclock)
-)
-

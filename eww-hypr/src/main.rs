@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 enum Cli {
     Workspaces { monitor_id: u32 },
     Clock { format: String },
+    ToggleSpeakers,
 }
 
 fn main() -> std::io::Result<()> {
@@ -19,6 +20,7 @@ fn main() -> std::io::Result<()> {
     match cli {
         Cli::Workspaces { monitor_id } => watch_workspaces(monitor_id)?,
         Cli::Clock { format } => watch_clock(&format),
+        Cli::ToggleSpeakers => toggle_speakers(),
     }
 
     Ok(())
@@ -40,10 +42,12 @@ fn watch_workspaces(monitor_id: u32) -> std::io::Result<()> {
             continue;
         };
         match event {
-            "focusedmon" | "workspace" => {
+            "focusedmon" | "workspace" | "movewindow" => {
                 get_workspaces(monitor_id);
             }
-            _ => {}
+            _ => {
+                // eprintln!("{e:?}");
+            }
         }
     }
     Ok(())
@@ -120,5 +124,46 @@ fn watch_clock(format: &str) {
         let seconds = now.time().second();
         // Add an extra second to be safe
         std::thread::sleep(std::time::Duration::from_secs(60 - seconds as u64 + 1));
+    }
+}
+
+fn toggle_speakers() {
+    let mut in_audio = false;
+    let mut in_audio_sinks = false;
+    for line in std::process::Command::new("wpctl")
+        .arg("status")
+        .arg("-n")
+        .output()
+        .unwrap()
+        .stdout
+        .lines()
+    {
+        let line = line.unwrap();
+        if line.contains("Audio") {
+            in_audio = true;
+        }
+        if in_audio && line.contains("Sinks:") {
+            in_audio_sinks = true;
+        }
+        if in_audio_sinks && line.contains("Sink endpoints:") {
+            in_audio_sinks = false;
+        }
+        if in_audio_sinks && line.contains(". alsa_output") {
+            if !line.contains("*") {
+                eprintln!("Found {line}");
+                let re = regex::Regex::new(r"      ([0-9]+)").unwrap();
+                let c = re.captures(&line).unwrap();
+                let num = c.get(1).unwrap();
+                if !std::process::Command::new("wpctl")
+                    .arg("set-default")
+                    .arg(num.as_str())
+                    .status()
+                    .unwrap()
+                    .success()
+                {
+                    eprintln!("set default failed");
+                }
+            }
+        }
     }
 }
