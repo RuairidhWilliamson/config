@@ -33,5 +33,12 @@ name = "svelte"
 formatter = { command = 'prettier', args = ["--parser", "svelte"] }
 auto-format = true
 
+[[language]]
+name = "rain"
+scope = "source.rain"
+file-types = ["rain"]
+comment-token = "#"
+roots = []
+
 [language-server.rust-analyzer.config.diagnostics]
 disabled = ["inactive-code"]

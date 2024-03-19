@@ -50,7 +50,7 @@
                         :anchor "center center")
     :stacking "fg"
     (box :orientation "v"
-        ; (button :class "container" :onclick "systemctl poweroff" "Lock")
+        (button :class "container" :onclick "hyprlock" "Lock")
         (button :class "container" :onclick "loginctl terminate-user $(whoami)" "Log Out")
         (button :class "container" :onclick "systemctl reboot" "Restart")
         (button :class "container" :onclick "systemctl poweroff" "Power Off")
