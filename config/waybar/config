@@ -1,0 +1,60 @@
+{
+    "layer": "top", // Waybar at top layer
+    "spacing": 4, // Gaps between modules (4px)
+    "modules-left": [
+        "hyprland/workspaces",
+        "custom/media"
+    ],
+    "modules-center": [
+        "hyprland/window"
+    ],
+    "modules-right": [
+        "tray",
+        // "idle_inhibitor",
+        "pulseaudio",
+        // "cpu",
+        // "memory",
+        "clock"
+    ],
+    // Modules configuration
+    "hyprland/window": {
+        "separate-outputs": true,
+    },
+    "hyprland/workspaces": {
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10
+    },
+    "clock": {
+        // "timezone": "America/New_York",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%Y-%m-%d}"
+    },
+    "cpu": {
+        "format": "{usage}% ",
+        "tooltip": false
+    },
+    "memory": {
+        "format": "{}% "
+    },
+    "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "{volume} {icon}    {format_source}",
+        "format-muted": "🔇    {format_source}",
+        "format-source": "{volume} ",
+        "format-source-muted": "{volume} ",
+        "format-icons": {
+            "headphone": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "eww-hypr toggle-speakers"
+    }
+}
